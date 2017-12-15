@@ -7,17 +7,18 @@ namespace Kanrenmo
     public class Context
     {
 
-        public static IEnumerable<IReadOnlyDictionary<Var, Var>> Run(Relation relation, params Var[] variables)
-        {
-            return new Context()
+        public static IEnumerable<IReadOnlyDictionary<Var, Var>> Run(Relation relation, params Var[] variables) => 
+            new Context()
                 .With(variables)
                 .Apply(relation)
                 .SelectMany(context => context.QueryAll(variables));
-        }
 
 
         public static Relation Fresh(Relation relation, params Var[] variables) =>
-            new Relation(context => new Context(context._bindings).With(variables).Apply(relation));
+            new Relation(parent =>
+                Enumerable.Repeat(
+                    parent.With(new Relation(context =>
+                        new Context(context._bindings).With(variables).Apply(relation))), 1));
 
 
         internal IEnumerable<Context> Unify(Var left, Var right) =>
@@ -75,23 +76,28 @@ namespace Kanrenmo
             }
         }
 
-        private IEnumerable<ImmutableDictionary<Var, Var>> QueryAll(Var[] variables) => QueryAll(((IEnumerable<Var>)variables).GetEnumerator());
-
-        private IEnumerable<ImmutableDictionary<Var, Var>> QueryAll(IEnumerator<Var> variables)
+        private IEnumerable<ImmutableDictionary<Var, Var>> QueryAll(Var[] variables)
         {
-            if (!variables.MoveNext())
+
+            // TODO: replace it with recursive LINQ Aggregate() expression, with the help of Head-Tail split function 
+            if (variables.Length == 0)
             {
-                return Enumerable.Empty<ImmutableDictionary<Var, Var>>();
+                yield return ImmutableDictionary<Var, Var>.Empty;
+                yield break;
             }
 
-            return QueryAll(variables).SelectMany(d => QueryOne(variables.Current).Select(v => d.Add(variables.Current, v)));
+            foreach (var result in QueryOne(variables[0]))
+            {
+                foreach (var goal in QueryAll(variables.Skip(1).ToArray()))
+                {
+                    yield return goal.Add(variables[0], result);
+                }
+            }
         }
 
         private IEnumerable<Var> QueryOne(Var variable)
         {
-            Var result;
-
-            if (!_bindings.TryGetValue(variable, out result))
+            if (!_bindings.TryGetValue(variable, out var result))
             {
                 return _children?.Exec(this).SelectMany(c => c.QueryOne(variable));
             }
@@ -107,7 +113,7 @@ namespace Kanrenmo
             }
         }
 
-        private readonly ImmutableDictionary<Var, Var> _bindings = ImmutableDictionary<Var, Var>.Empty;
-        private readonly Relation _children = Relation.Empty;
+        private readonly ImmutableDictionary<Var, Var> _bindings;
+        private readonly Relation _children;
     }
 }
