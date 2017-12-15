@@ -4,18 +4,43 @@ using System.Linq;
 
 namespace Kanrenmo
 {
+    /// <summary>
+    /// Kanren relation function wrapper class
+    /// </summary>
     public class Relation
     {
+        /// <summary>
+        /// Empty relation
+        /// </summary>
         public static readonly Relation Empty = new Relation(context => Enumerable.Empty<Context>());
 
-        public static Relation operator |(Relation left, Relation right) =>
-            new Relation(context => left.Exec(context).Union(right.Exec(context)));
+        /// <summary>
+        /// Disjunction operator between two relations (same as "conde")
+        /// </summary>
+        /// <param name="left">left relation</param>
+        /// <param name="right">right relation</param>
+        /// <returns>operation result</returns>
+        public static Relation operator |(Relation left, Relation right) => 
+            new Relation(context => left.Execute(context).Union(right.Execute(context)));
 
+        /// <summary>
+        /// Conjunction operator between two relations
+        /// </summary>
+        /// <param name="left">left relation</param>
+        /// <param name="right">right relation</param>
+        /// <returns>operation result</returns>
         public static Relation operator &(Relation left, Relation right) =>
-            new Relation(context => left.Exec(context).Select(right.Exec).SelectMany(s => s));
+            new Relation(context => left.Execute(context).Select(right.Execute).SelectMany(s => s));
 
-        public Relation(Func<Context, IEnumerable<Context>> exec) => Exec = exec;
+        /// <summary>
+        /// Constructs and initializes the class instance
+        /// </summary>
+        /// <param name="execute">relation function to wrap</param>
+        public Relation(Func<Context, IEnumerable<Context>> execute) => Execute = execute;
 
-        public readonly Func<Context, IEnumerable<Context>> Exec;
+        /// <summary>
+        /// Executes the relation
+        /// </summary>
+        public readonly Func<Context, IEnumerable<Context>> Execute;
     }
 }
