@@ -39,6 +39,14 @@ namespace Kanrenmo
         public Relation(Func<Context, IEnumerable<Context>> execute) => Execute = execute;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Relation"/> class.
+        /// </summary>
+        /// <param name="relation">The lazy relation constructor function.</param>
+        public Relation(Func<Relation> relation) : this(context => relation().Execute(context))
+        {
+        }
+
+        /// <summary>
         /// Executes the relation
         /// </summary>
         public readonly Func<Context, IEnumerable<Context>> Execute;
