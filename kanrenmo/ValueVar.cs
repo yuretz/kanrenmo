@@ -1,26 +1,33 @@
 ﻿namespace Kanrenmo
 {
+    public class ValueVar: Var
+    {
+        /*private protected*/ internal ValueVar()
+        {
+        }
+    }
+
     /// <summary>
     /// Kanren variable bound to a value
     /// </summary>
     /// <typeparam name="T">Value type</typeparam>
     /// <seealso cref="Kanrenmo.Var" />
-    public class BoundVar<T> : Var
+    public class ValueVar<T> : ValueVar 
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T"/> to <see cref="BoundVar{T}"/>.
+        /// Performs an implicit conversion from <see cref="T"/> to <see cref="ValueVar{T}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator BoundVar<T>(T value) => new BoundVar<T>(value);
+        public static implicit operator ValueVar<T>(T value) => new ValueVar<T>(value);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoundVar{T}"/> class.
+        /// Initializes a new instance of the <see cref="ValueVar{T}"/> class.
         /// </summary>
         /// <param name="value">The value to bind the variable to.</param>
-        public BoundVar(T value) => Value = value;
+        public ValueVar(T value) => Value = value;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Var" /> is bound to a value.
@@ -47,7 +54,7 @@
         /// </returns>
         public override bool Equals(object obj)
         {
-            var other = obj as BoundVar<T>;
+            var other = obj as ValueVar<T>;
             return !Equals(other, null) && Equals(other.Value, Value);
         }
 

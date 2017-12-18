@@ -14,7 +14,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(int value) => new BoundVar<int>(value);
+        public static implicit operator Var(int value) => new ValueVar<int>(value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Boolean"/> to <see cref="Var"/>.
@@ -23,7 +23,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(bool value) => new BoundVar<bool>(value);
+        public static implicit operator Var(bool value) => new ValueVar<bool>(value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Double"/> to <see cref="Var"/>.
@@ -32,7 +32,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(double value) => new BoundVar<double>(value);
+        public static implicit operator Var(double value) => new ValueVar<double>(value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Var"/>.
@@ -41,7 +41,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(string value) => new BoundVar<string>(value);
+        public static implicit operator Var(string value) => new ValueVar<string>(value);
 
         /// <summary>
         /// Equality (unification) operator == between two variables.
