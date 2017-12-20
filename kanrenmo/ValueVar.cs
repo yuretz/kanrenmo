@@ -1,10 +1,8 @@
 ﻿namespace Kanrenmo
 {
-    public class ValueVar: Var
+    public abstract class ValueVar: Var
     {
-        /*private protected*/ internal ValueVar()
-        {
-        }
+        public abstract object UntypedValue { get; }
     }
 
     /// <summary>
@@ -44,6 +42,8 @@
         /// The value.
         /// </value>
         public T Value { get; }
+
+        public override object UntypedValue => Value;
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
