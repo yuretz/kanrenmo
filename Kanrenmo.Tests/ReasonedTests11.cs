@@ -40,7 +40,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_2()
         {
-            AssertSingleBound(true, Run(_q == true, _q), _q);
+            AssertOneBound(true, Run(_q == true, _q), _q);
         }
 
 /*
@@ -98,7 +98,7 @@ namespace Kanrenmo.Tests
         [InlineData(42)]
         public void Test11_5_7_9<T>(T value)
         {
-            AssertSingleBound(value, Run(_succeed & _q == (ValueVar<T>)value, _q), _q);
+            AssertOneBound(value, Run(_succeed & _q == (ValueVar<T>)value, _q), _q);
         }
 
 /*
@@ -113,7 +113,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_11()
         {
-            AssertSingleBound(true, Run(Fresh(true == _x & true == _q, _x), _q), _q);
+            AssertOneBound(true, Run(Fresh(true == _x & true == _q, _x), _q), _q);
         }
 
 /*
@@ -128,7 +128,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_12()
         {
-            AssertSingleBound(true, Run(Fresh(_x == true & true == _q, _x), _q), _q);
+            AssertOneBound(true, Run(Fresh(_x == true & true == _q, _x), _q), _q);
         }
 
 /*
@@ -144,7 +144,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_13()
         {
-            AssertSingleBound(true, Run(Fresh(_x == true & _q == true, _x), _q), _q);
+            AssertOneBound(true, Run(Fresh(_x == true & _q == true, _x), _q), _q);
         }
 
 /*
@@ -158,7 +158,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_14()
         {
-            AssertSingleUnbound(Run(_succeed, _x), _x);
+            AssertOneUnbound(Run(_succeed, _x), _x);
         }
 
 /*
@@ -173,7 +173,7 @@ namespace Kanrenmo.Tests
         [Fact()]
         public void Test11_15()
         {
-            AssertSingleUnbound(Run(Invoke(x => Fresh(true == x, x), false), _x), _x);
+            AssertOneUnbound(Run(Invoke(x => Fresh(true == x, x), false), _x), _x);
         }
 
 /*
@@ -265,7 +265,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_21()
         {
-            AssertSingleBound(false, Run(_q == false & _q == false, _q), _q);
+            AssertOneBound(false, Run(_q == false & _q == false, _q), _q);
         }
 
 /*
@@ -279,7 +279,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_22()
         {
-            AssertSingleBound(true, Run(Invoke(x => x == true, _q), _q), _q);
+            AssertOneBound(true, Run(Invoke(x => x == true, _q), _q), _q);
         }
 
 /*
@@ -293,7 +293,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_23()
         {
-            AssertSingleUnbound(Run(Fresh(_x == _r, _x), _r), _r);
+            AssertOneUnbound(Run(Fresh(_x == _r, _x), _r), _r);
         }
 
 
@@ -311,7 +311,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_24()
         {
-            AssertSingleBound(true, Run(Fresh(true == _x & _x == _q, _x), _q), _q);
+            AssertOneBound(true, Run(Fresh(true == _x & _x == _q, _x), _q), _q);
         }
 
 /*
@@ -326,7 +326,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_25()
         {
-            AssertSingleBound(true, Run(Fresh(_x == _q & true == _x, _x), _q), _q);
+            AssertOneBound(true, Run(Fresh(_x == _q & true == _x, _x), _q), _q);
         }
 
 /*
@@ -341,7 +341,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_26()
         {
-            AssertSingleBound(false, Run(Fresh(_q.Equals(_x) == _q, _x), _q), _q);
+            AssertOneBound(false, Run(Fresh(_q.Equals(_x) == _q, _x), _q), _q);
         }
         
 /*
@@ -357,7 +357,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_27()
         {
-            AssertSingleBound(
+            AssertOneBound(
                 false,
                 Run(Invoke(x => Fresh(x == Equals(x, _q), _q), _q),
                     _q),
@@ -399,7 +399,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test13_succeed1()
         {
-            AssertSingleUnbound(Run(_fail & _fail | _succeed & _succeed, _q), _q);
+            AssertOneUnbound(Run(_fail & _fail | _succeed & _succeed, _q), _q);
         }
 /*
             (test-check "testc13.tex-succeed2" (not (null? (run* (q)
@@ -415,7 +415,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test13_succeed2()
         {
-            AssertSingleUnbound(Run(_succeed & _succeed | _succeed & _fail, _q), _q);
+            AssertOneUnbound(Run(_succeed & _succeed | _succeed & _fail, _q), _q);
         }
 
 /*
@@ -430,7 +430,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test11_30()
         {
-            AssertMultiple(
+            AssertAll(
                 new object[] {"olive", "oil"}, 
                 Run(_x == "olive" & _succeed | _x == "oil" & _succeed, _x),
                 _x);
@@ -463,7 +463,22 @@ namespace Kanrenmo.Tests
             ((== 'oil x) succeed)))
 
         `(olive _.0 oil))
+*/
+        [Fact]
+        void Test11_32()
+        {
+            AssertAll(
+                new object [] {"olive", null, "oil"},
+                Run(
+                    _x == "virgin" & _fail 
+                    | _x == "olive" & _succeed 
+                    | _succeed & _succeed
+                    | _x == "oil" & _succeed,
+                    _x), 
+                _x);          
+        }
 
+/*
             (test-check "testc13.tex-conde1" (run* (x)
 
 
@@ -474,7 +489,21 @@ namespace Kanrenmo.Tests
 
 
             ) `(olive _.0 oil))
+*/
 
+       [Fact]
+        void Test13_conde1()
+        {
+            AssertAll(
+                new object [] {"olive", null, "oil"},
+                Run(_x == "olive" & _succeed 
+                    | _succeed & _succeed
+                    | _x == "oil" & _succeed,
+                    _x), 
+                _x);          
+        }
+
+/*
 
         (test-check "testc11.tex-33" 
         (run2 (x)
@@ -485,7 +514,21 @@ namespace Kanrenmo.Tests
             ((== 'oil x) succeed)))
 
         `(extra olive))
+*/
+        [Fact]
+        public void Test11_33()
+        {
+            AssertExists(
+                new object[] {"extra", "olive","oil" },
+                Run2(_x == "extra" & _succeed
+                    | _x == "virgin" & _fail
+                    | _x == "olive" & _succeed
+                    | _x == "oil" & _succeed,
+                    _x),
+                _x, 2);
+        }
 
+/*
         (test-check "testc11.tex-34" 
         (run* (r)
             (fresh (x y)
@@ -582,15 +625,11 @@ namespace Kanrenmo.Tests
 
 */
 
-        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run1(Relation relation, params Var[] variables)
-        {
-            var d = Run(relation, variables).FirstOrDefault();
-            if (d != null)
-            {
-                yield return d;
-            }
-        }
-            
+        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run1(Relation relation, params Var[] variables) => 
+            Run(relation, variables).Take(1);
+
+        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run2(Relation relation, params Var[] variables) => 
+            Run(relation, variables).Take(2);
 
         private Func<T, TRet> Lambda<T, TRet>(Func<T, TRet> lambda) => lambda;
 
@@ -605,7 +644,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertSingleBound<T>(T value, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertOneBound<T>(T value, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -616,7 +655,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertSingleUnbound(IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertOneUnbound(IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -626,7 +665,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertMultiple(object[] values, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertAll(object[] values, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
         {
             var list = results.ToList();
             Assert.Equal(values.Length, list.Count);
@@ -639,6 +678,24 @@ namespace Kanrenmo.Tests
                          && (value == null && !x.Bound
                              || Equals((x as ValueVar)?.UntypedValue, value)));
             }
+        }
+
+        [AssertionMethod]
+        private void AssertExists(object[] values, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v, int count = 1)
+        {
+            var list = results.ToList();            
+            Assert.All(list, d => Assert.Single(d));
+            var total = 0;
+            foreach (var value in values)
+            {
+                if (list.Exists(d => d.TryGetValue(v, out var x)
+                                     && (value == null && !x.Bound
+                                         || Equals((x as ValueVar)?.UntypedValue, value))))
+                {
+                    total++;
+                }
+            }
+            Assert.Equal(count, total);
         }
 
         private readonly Relation _fail = (Var) true == false;
