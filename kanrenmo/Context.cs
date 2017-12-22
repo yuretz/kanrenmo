@@ -8,7 +8,7 @@ namespace Kanrenmo
     /// <summary>
     /// Kanren execution context (variable scope)
     /// </summary>
-    public class Context
+    public partial class Context
     {
         /// <summary>
         /// Runs the specified relation and query the variables.
@@ -40,7 +40,6 @@ namespace Kanrenmo
                         .Apply(relation)
                         // restore the scope for each resulting context
                         .Select(child => new Context(parent._scope, child._bindings)));
-
 
         /// <summary>
         /// Unifies two variables.

@@ -170,10 +170,10 @@ namespace Kanrenmo.Tests
 
         `(_.0))
 */
-        [Fact(Skip = "Not implemented")]
+        [Fact()]
         public void Test11_15()
         {
-            AssertSingleUnbound(Run(Fresh(true == _x, _x), _x), _x);
+            AssertSingleUnbound(Run(Invoke(x => Fresh(true == x, x), false), _x), _x);
         }
 
 /*
@@ -276,10 +276,10 @@ namespace Kanrenmo.Tests
 
         (list #t))
 */
-        [Fact(Skip="Not implemented")]
+        [Fact]
         public void Test11_22()
         {
-            AssertSingleBound(true, Run(Lambda((Var x) => x == true)(_q), _q), _q);
+            AssertSingleBound(true, Run(Invoke(x => x == true, _q), _q), _q);
         }
 
 /*
@@ -354,11 +354,14 @@ namespace Kanrenmo.Tests
 
         (list #f))
 */
-
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public void Test11_27()
         {
-            
+            AssertSingleBound(
+                false,
+                Run(Invoke(x => Fresh(x == Equals(x, _q), _q), _q),
+                    _q),
+                _q);
         }
 
 
