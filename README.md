@@ -1,2 +1,2 @@
-# kanrenmō
+# Kanrenmō
 miniKanren for .NET
