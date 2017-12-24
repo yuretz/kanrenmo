@@ -83,27 +83,6 @@ namespace Kanrenmo
         private IEnumerable<Context> Apply(Relation relation) => relation.Execute(this);
 
         /// <summary>
-        /// Unifies an unbound and a bound variables.
-        /// </summary>
-        /// <typeparam name="T">Bound variable value type</typeparam>
-        /// <param name="left">The unbound variable.</param>
-        /// <param name="right">The bound variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<T>(Var left, ValueVar<T> right)
-        {
-            yield return new Context(_scope, _bindings.Add(left, right));
-        }
-
-        /// <summary>
-        /// Unifies a bound and an unbound variables.
-        /// </summary>
-        /// <typeparam name="T">Bound variable value type</typeparam>
-        /// <param name="left">The bound variable.</param>
-        /// <param name="right">The unbound variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<T>(ValueVar<T> left, Var right) => UnifyImpl(right, left);
-
-        /// <summary>
         /// Unifies two unbound variables.
         /// </summary>
         /// <param name="left">The left variable.</param>
@@ -120,6 +99,38 @@ namespace Kanrenmo
         }
 
         /// <summary>
+        /// Unifies an unbound and a bound variables.
+        /// </summary>
+        /// <typeparam name="T">Bound variable value type</typeparam>
+        /// <param name="left">The unbound variable.</param>
+        /// <param name="right">The bound variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl<T>(Var left, ValueVar<T> right)
+        {
+            yield return new Context(_scope, _bindings.Add(left, right));
+        }
+
+        /// <summary>
+        /// Unifies an unbound and a list variables.
+        /// </summary>
+        /// <param name="left">The unbound variable.</param>
+        /// <param name="right">The list variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl(Var left, ListVar right)
+        {
+            yield return new Context(_scope, _bindings.Add(left, right));
+        }
+
+        /// <summary>
+        /// Unifies a bound and an unbound variables.
+        /// </summary>
+        /// <typeparam name="T">Bound variable value type</typeparam>
+        /// <param name="left">The bound variable.</param>
+        /// <param name="right">The unbound variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl<T>(ValueVar<T> left, Var right) => UnifyImpl(right, left);
+
+        /// <summary>
         /// Unifies two bound variables.
         /// </summary>
         /// <param name="left">The left variable.</param>
@@ -134,6 +145,70 @@ namespace Kanrenmo
         }
 
         /// <summary>
+        /// Unifies a value var with a list var.
+        /// </summary>
+        /// <param name="left">The value variable.</param>
+        /// <param name="right">The list variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        // ReSharper disable UnusedParameter.Local
+        private IEnumerable<Context> UnifyImpl<TLeft>(ValueVar<TLeft> left, ListVar right)
+            => Enumerable.Empty<Context>();
+        // ReSharper restore UnusedParameter.Local
+
+        /// <summary>
+        /// Unifies a list var with unbound var.
+        /// </summary>
+        /// <param name="left">The list variable.</param>
+        /// <param name="right">The unbound variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl(ListVar left, Var right)
+            => UnifyImpl(right, left);
+
+        /// <summary>
+        /// Unifies a list var with a value var.
+        /// </summary>
+        /// <param name="left">The list variable.</param>
+        /// <param name="right">The value variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl<TRight>(ListVar left, ValueVar<TRight> right)
+            => UnifyImpl(right, left);
+
+        /// <summary>
+        /// Unifies two list variables.
+        /// </summary>
+        /// <param name="left">The first list variable.</param>
+        /// <param name="right">The second list variable.</param>
+        /// <returns>The resulting context enumeration</returns>
+        private IEnumerable<Context> UnifyImpl(ListVar left, ListVar right)
+        {
+            if (left.Count != right.Count)
+            {
+                return Enumerable.Empty<Context>();
+            }
+
+            IEnumerable<Context> result = Enumerable.Repeat(this, 1);
+
+            using (var leftEnumerator = left.GetEnumerator())
+            {
+                using (var rightEnumerator = right.GetEnumerator())
+                {
+                    while (leftEnumerator.MoveNext() && rightEnumerator.MoveNext())
+                    {
+                        var leftItem = leftEnumerator.Current;
+                        var rightItem = rightEnumerator.Current;
+                        result = result
+                            .Select(c => c.Unify(leftItem, rightItem))
+                            .SelectMany(c => c);
+                    }
+
+                    return result;
+                }
+            }
+
+
+        }
+
+        /// <summary>
         /// Reifies the specified variable.
         /// </summary>
         /// <param name="variable">The variable to reify.</param>
@@ -144,6 +219,8 @@ namespace Kanrenmo
             {
                 case ValueVar value:
                     return ReifyImpl(value);
+                case ListVar list:
+                    return ReifyImpl(list);
                 default:
                     return ReifyImpl(variable);
             }
@@ -179,6 +256,13 @@ namespace Kanrenmo
                 bound = result;
             }
         }
+
+        /// <summary>
+        /// Reifies the list variable.
+        /// </summary>
+        /// <param name="list">The list variable to reify.</param>
+        /// <returns>reified list</returns>
+        private Var ReifyImpl(ListVar list) => new ListVar(list.Select(Reify));
 
         /// <summary>
         /// Queries all the provided variables.

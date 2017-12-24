@@ -8,7 +8,7 @@ namespace Kanrenmo
     public class Var
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="Var"/>.
+        /// Performs an implicit conversion from <see cref="int"/> to <see cref="Var"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
@@ -17,7 +17,7 @@ namespace Kanrenmo
         public static implicit operator Var(int value) => new ValueVar<int>(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Boolean"/> to <see cref="Var"/>.
+        /// Performs an implicit conversion from <see cref="bool"/> to <see cref="Var"/>.
         /// </summary>
         /// <param name="value">if set to <c>true</c> [value].</param>
         /// <returns>
@@ -26,7 +26,7 @@ namespace Kanrenmo
         public static implicit operator Var(bool value) => new ValueVar<bool>(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Double"/> to <see cref="Var"/>.
+        /// Performs an implicit conversion from <see cref="double"/> to <see cref="Var"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
@@ -35,13 +35,22 @@ namespace Kanrenmo
         public static implicit operator Var(double value) => new ValueVar<double>(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Var"/>.
+        /// Performs an implicit conversion from <see cref="string"/> to <see cref="Var"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Var(string value) => new ValueVar<string>(value);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Var"/>[] to <see cref="Var"/>.
+        /// </summary>
+        /// <param name="variables">The variables.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator Var(Var[] variables) => new ListVar(variables); 
 
         /// <summary>
         /// Equality (unification) operator == between two variables.

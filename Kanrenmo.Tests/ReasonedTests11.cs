@@ -184,10 +184,13 @@ namespace Kanrenmo.Tests
 
         (list `(_.0 _.1)))
 */
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test11_16()
         {
-            // TODO 
+            AssertSingle(
+                CheckList(null, new int?[] {0, 1}), 
+                Run(Fresh(_r == new[] {_x, _y}, _x, _y), _r),
+                _r);
         }
 
 /*
@@ -199,10 +202,13 @@ namespace Kanrenmo.Tests
 
         (list `(_.0 _.1)))
 */
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test11_17()
         {
-            // TODO 
+            AssertSingle(
+                CheckList(null, new int?[] { 0, 1 }),
+                Run(Fresh(_s == new[] { _t, _u }, _t, _u), _s),
+                _s);
         }
 
 /*
@@ -216,10 +222,13 @@ namespace Kanrenmo.Tests
 
         (list `(_.0 _.1 _.0)))
 */
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test11_18()
         {
-            // TODO 
+            AssertSingle(
+                CheckList(null, new int? [] {0, 1, 0}),
+                Run(Fresh(Invoke(y => Fresh(_r == new [] {y, _x, y}, _x), _x), _x), _r),
+                _r);
         }
 
 /*
@@ -232,10 +241,13 @@ namespace Kanrenmo.Tests
 
         (list `(_.0 _.1 _.0)))
 */
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void Test11_19()
         {
-            // TODO 
+            AssertSingle(
+                CheckList(null, new int?[] { 0, 1, 0 }),
+                Run(Fresh(Invoke(y => Fresh(_r == new[] { _x, y, _x }, _x), _x), _x), _r),
+                _r);
         }
 
 /*
@@ -537,7 +549,18 @@ namespace Kanrenmo.Tests
             (== (cons x (cons y '())) r)))
 
         (list `(split pea)))
+*/
 
+        [Fact]
+        public void Test11_34()
+        {
+            AssertSingle(
+                CheckList(new object[] {"split", "pea"}, null),
+                Run(Fresh(_x == "split" & _y == "pea" & _r == new[] {_x, _y}, _x, _y), _r),
+                _r);
+        }
+
+/*
         (test-check "testc11.tex-35" 
         (run* (r)
             (fresh (x y)
@@ -547,6 +570,26 @@ namespace Kanrenmo.Tests
             (== (cons x (cons y '())) r)))
 
         `((split pea) (navy bean)))
+*/
+
+        [Fact]
+        public void Test11_35()
+        {
+            AssertAll(
+                new object[] { CheckList(new object[] {"split", "pea"}, null),
+                    CheckList(new object[] { "navy", "bean" }, null) },
+                Run(
+                    Fresh(
+                        (_x == "split" & _y == "pea" | _x == "navy" & _y == "bean") 
+                            & _r == new [] {_x, _y}, 
+                        _x, _y),
+                    _r),
+                _r);
+        }
+
+
+/*
+ 
 
         (test-check "testc11.tex-36" 
         (run* (r)
@@ -631,7 +674,7 @@ namespace Kanrenmo.Tests
         private IEnumerable<IReadOnlyDictionary<Var, Var>> Run2(Relation relation, params Var[] variables) => 
             Run(relation, variables).Take(2);
 
-        private Func<T, TRet> Lambda<T, TRet>(Func<T, TRet> lambda) => lambda;
+        //private Func<T, TRet> Lambda<T, TRet>(Func<T, TRet> lambda) => lambda;
 
         [AssertionMethod]
         private void AssertSingle(Predicate<Var> check, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
@@ -672,11 +715,21 @@ namespace Kanrenmo.Tests
             Assert.All(list, d => Assert.Single(d));
             foreach (var value in values)
             {
-                Assert.Contains(
-                    list,
-                    d => d.TryGetValue(v, out var x)
-                         && (value == null && !x.Bound
-                             || Equals((x as ValueVar)?.UntypedValue, value)));
+                if (value is Predicate<Var> predicate)
+                {
+                    Assert.Contains(
+                        list,
+                        d => d.TryGetValue(v, out var x)
+                             && predicate(x));
+                }
+                else
+                {
+                    Assert.Contains(
+                        list,
+                        d => d.TryGetValue(v, out var x)
+                             && (value == null && !x.Bound
+                                 || Equals((x as ValueVar)?.UntypedValue, value)));
+                }
             }
         }
 
@@ -688,7 +741,15 @@ namespace Kanrenmo.Tests
             var total = 0;
             foreach (var value in values)
             {
-                if (list.Exists(d => d.TryGetValue(v, out var x)
+                if (value is Predicate<Var> predicate)
+                {
+                    if (list.Exists(d => d.TryGetValue(v, out var x)
+                                         && predicate(x)))
+                    {
+                        total++;
+                    }
+
+                } else if (list.Exists(d => d.TryGetValue(v, out var x)
                                      && (value == null && !x.Bound
                                          || Equals((x as ValueVar)?.UntypedValue, value))))
                 {
@@ -698,10 +759,67 @@ namespace Kanrenmo.Tests
             Assert.Equal(count, total);
         }
 
+        private Predicate<Var> CheckList(object[] values, int?[] indices) => variable =>
+        {
+            if (!(variable is ListVar list))
+            {
+                return false;
+            }
+
+            if (values != null)
+            {
+                if (list.Count < values.Length)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] == null)
+                    {
+                        continue;
+                    }
+                    var item = list[i] as ValueVar;
+                    if (!Equals(item?.UntypedValue, values[i]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (indices != null)
+            {
+                if (list.Count < indices.Length)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    if (indices[i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (!Equals(list[indices[i].Value], list[i]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        };
+        
+
         private readonly Relation _fail = (Var) true == false;
         private readonly Relation _succeed = (Var) false == false;
         private readonly Var _q = new Var();
         private readonly Var _x = new Var();
+        private readonly Var _y = new Var();
         private readonly Var _r = new Var();
+        private readonly Var _t = new Var();
+        private readonly Var _u = new Var();
+        private readonly Var _s = new Var();
     }
 }
