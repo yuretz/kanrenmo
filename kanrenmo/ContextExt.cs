@@ -71,5 +71,43 @@ namespace Kanrenmo
                     param2,
                     param3).Execute(context));
         }
+
+        /// <summary>
+        /// Invokes the specified function.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="argument">The argument value to pass to the function.</param>
+        /// <returns>Resulting relation</returns>
+        public static Relation Invoke(Func<Relation, Relation> function, Relation argument) =>
+            new Relation(context => function(argument).Execute(context));
+
+        /// <summary>
+        /// Invokes the specified function.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="argument1">The first argument value to pass to the function.</param>
+        /// <param name="argument2">The second argument value to pass to the function.</param>
+        /// <returns>Resulting relation</returns>
+        public static Relation Invoke(
+            Func<Relation, Relation, Relation> function, 
+            Relation argument1,
+            Relation argument2) =>
+            new Relation(context => function(argument1, argument2).Execute(context));
+
+        /// <summary>
+        /// Invokes the specified function.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="argument1">The first argument value to pass to the function.</param>
+        /// <param name="argument2">The second argument value to pass to the function.</param>
+        /// <param name="argument3">The third argument value to pass to the function.</param>
+        /// <returns>Resulting relation</returns>
+        public static Relation Invoke(
+            Func<Relation, Relation, Relation, Relation> function,
+            Relation argument1,
+            Relation argument2,
+            Relation argument3) =>
+            new Relation(context => function(argument1, argument2, argument3).Execute(context));
+
     }
 }

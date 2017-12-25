@@ -10,6 +10,18 @@ namespace Kanrenmo
     /// </summary>
     public partial class Context
     {
+
+
+        /// <summary>
+        /// The relation that always succeeds
+        /// </summary>
+        public static readonly Relation Succeed = (Var)false == false;
+
+        /// <summary>
+        /// The relation that always fails
+        /// </summary>
+        public static readonly Relation Fail = (Var)true == false;      
+
         /// <summary>
         /// Runs the specified relation and query the variables.
         /// </summary>
