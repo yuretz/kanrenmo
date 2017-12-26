@@ -859,10 +859,12 @@ namespace Kanrenmo.Tests
 
         private Predicate<Var> CheckList(object[] values, int?[] indices) => variable =>
         {
-            if (!(variable is ListVar list))
+            if (!(variable is SequenceVar sequence))
             {
                 return false;
             }
+
+            var list = sequence.ToList();
 
             if (values != null)
             {

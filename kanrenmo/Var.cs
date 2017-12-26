@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kanrenmo
 {
@@ -50,7 +51,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(Var[] variables) => new ListVar(variables); 
+        public static implicit operator Var(Var[] variables) => Sequence(variables); 
 
         /// <summary>
         /// Equality (unification) operator == between two variables.
@@ -73,6 +74,13 @@ namespace Kanrenmo
         public static Relation operator !=(Var left, Var right) => new Relation(context => throw new NotImplementedException());
 
         /// <summary>
+        /// Converts variable enumeration to a <see cref="SequenceVar"/>
+        /// </summary>
+        /// <param name="variables">The variables enumeration.</param>
+        /// <returns>new variable instance</returns>
+        public static SequenceVar Sequence(IEnumerable<Var> variables) => Sequence(variables.GetEnumerator());
+
+        /// <summary>
         /// The unique variable identifier
         /// </summary>
         public readonly int Id = ++_id;
@@ -86,11 +94,11 @@ namespace Kanrenmo
         public virtual bool Bound => false;
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj) => ReferenceEquals(this, obj);
 
@@ -101,6 +109,9 @@ namespace Kanrenmo
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode() => Id;
+
+        private static SequenceVar Sequence(IEnumerator<Var> variables) => 
+            !variables.MoveNext() ? SequenceVar.Empty : new SequenceVar(variables.Current, Sequence(variables));
 
         private static int _id;
     }

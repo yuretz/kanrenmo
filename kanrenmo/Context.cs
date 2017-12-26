@@ -123,12 +123,12 @@ namespace Kanrenmo
         }
 
         /// <summary>
-        /// Unifies an unbound and a list variables.
+        /// Unifies an unbound and a sequence variables.
         /// </summary>
         /// <param name="left">The unbound variable.</param>
-        /// <param name="right">The list variable.</param>
+        /// <param name="right">The sequence variable.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(Var left, ListVar right)
+        private IEnumerable<Context> UnifyImpl(Var left, SequenceVar right)
         {
             yield return new Context(_scope, _bindings.Add(left, right));
         }
@@ -157,63 +157,69 @@ namespace Kanrenmo
         }
 
         /// <summary>
-        /// Unifies a value var with a list var.
+        /// Unifies a value var with a sequence var.
         /// </summary>
         /// <param name="left">The value variable.</param>
-        /// <param name="right">The list variable.</param>
+        /// <param name="right">The sequence variable.</param>
         /// <returns>The resulting context enumeration</returns>
         // ReSharper disable UnusedParameter.Local
-        private IEnumerable<Context> UnifyImpl<TLeft>(ValueVar<TLeft> left, ListVar right)
+        private IEnumerable<Context> UnifyImpl<TLeft>(ValueVar<TLeft> left, SequenceVar right)
             => Enumerable.Empty<Context>();
         // ReSharper restore UnusedParameter.Local
 
         /// <summary>
-        /// Unifies a list var with unbound var.
+        /// Unifies a sequence var with unbound var.
         /// </summary>
-        /// <param name="left">The list variable.</param>
+        /// <param name="left">The sequence variable.</param>
         /// <param name="right">The unbound variable.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(ListVar left, Var right)
+        private IEnumerable<Context> UnifyImpl(SequenceVar left, Var right)
             => UnifyImpl(right, left);
 
         /// <summary>
-        /// Unifies a list var with a value var.
+        /// Unifies a sequence var with a value var.
         /// </summary>
-        /// <param name="left">The list variable.</param>
+        /// <param name="left">The sequence variable.</param>
         /// <param name="right">The value variable.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<TRight>(ListVar left, ValueVar<TRight> right)
+        private IEnumerable<Context> UnifyImpl<TRight>(SequenceVar left, ValueVar<TRight> right)
             => UnifyImpl(right, left);
 
         /// <summary>
-        /// Unifies two list variables.
+        /// Unifies two sequence variables.
         /// </summary>
-        /// <param name="left">The first list variable.</param>
-        /// <param name="right">The second list variable.</param>
+        /// <param name="left">The first sequence variable.</param>
+        /// <param name="right">The second sequence variable.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(ListVar left, ListVar right)
+        private IEnumerable<Context> UnifyImpl(SequenceVar left, SequenceVar right)
         {
-            if (left.Count != right.Count)
-            {
-                return Enumerable.Empty<Context>();
-            }
-
             IEnumerable<Context> result = Enumerable.Repeat(this, 1);
 
             using (var leftEnumerator = left.GetEnumerator())
             {
                 using (var rightEnumerator = right.GetEnumerator())
                 {
-                    while (leftEnumerator.MoveNext() && rightEnumerator.MoveNext())
+                    while (true)
                     {
+                        var moreLeft = leftEnumerator.MoveNext();
+                        var moreRight = rightEnumerator.MoveNext();
+
+                        if (!(moreLeft || moreRight))
+                        {
+                            return result;
+                        }
+
+                        if (moreLeft ^ moreRight)
+                        {
+                            return Enumerable.Empty<Context>();
+                        }
+
                         var leftItem = leftEnumerator.Current;
                         var rightItem = rightEnumerator.Current;
                         result = result
                             .Select(c => c.Unify(leftItem, rightItem))
                             .SelectMany(c => c);
                     }
-
-                    return result;
                 }
             }
 
@@ -231,8 +237,8 @@ namespace Kanrenmo
             {
                 case ValueVar value:
                     return ReifyImpl(value);
-                case ListVar list:
-                    return ReifyImpl(list);
+                case SequenceVar sequence:
+                    return ReifyImpl(sequence);
                 default:
                     return ReifyImpl(variable);
             }
@@ -270,11 +276,12 @@ namespace Kanrenmo
         }
 
         /// <summary>
-        /// Reifies the list variable.
+        /// Reifies the sequence variable.
         /// </summary>
-        /// <param name="list">The list variable to reify.</param>
-        /// <returns>reified list</returns>
-        private Var ReifyImpl(ListVar list) => new ListVar(list.Select(Reify));
+        /// <param name="sequence">The sequence variable to reify.</param>
+        /// <returns>reified sequence</returns>
+        private Var ReifyImpl(SequenceVar sequence) => 
+            sequence.IsEmpty ? SequenceVar.Empty : new SequenceVar(Reify(sequence.Head), Reify(sequence.Tail));
 
         /// <summary>
         /// Queries all the provided variables.
