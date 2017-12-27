@@ -10,8 +10,6 @@ namespace Kanrenmo
     /// </summary>
     public partial class Context
     {
-
-
         /// <summary>
         /// The relation that always succeeds
         /// </summary>
@@ -59,10 +57,21 @@ namespace Kanrenmo
         /// <param name="left">The left variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>Resulting context enumeration</returns>
-        internal IEnumerable<Context> Unify(Var left, Var right) =>
+        internal IEnumerable<Context> Unify(Var left, Var right)
+        {
             // use dynamic binding to dispatch to the proper method
-            UnifyImpl((dynamic)Reify(left), (dynamic)Reify(right));
+            var result = UnifySingle(left, right);
+            return result == null ? Enumerable.Empty<Context>() : Enumerable.Repeat(result, 1);
+        }
 
+
+        /// <summary>
+        /// Unifies two variables returning the new context.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The new context or null if unification fails</returns>
+        private Context UnifySingle(Var left, Var right) => UnifyImpl((dynamic) Reify(left), (dynamic) Reify(right));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Context" /> class.
@@ -99,16 +108,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="left">The left variable.</param>
         /// <param name="right">The right variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(Var left, Var right)
-        {
-            var unified = new Var();
-            yield return new Context(
-                _scope,
-                _bindings
-                    .Add(left, unified)
-                    .Add(right, unified));
-        }
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl(Var left, Var right) => new Context(_scope, _bindings.Add(left, right));
 
         /// <summary>
         /// Unifies an unbound and a bound variables.
@@ -116,11 +117,8 @@ namespace Kanrenmo
         /// <typeparam name="T">Bound variable value type</typeparam>
         /// <param name="left">The unbound variable.</param>
         /// <param name="right">The bound variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<T>(Var left, ValueVar<T> right)
-        {
-            yield return new Context(_scope, _bindings.Add(left, right));
-        }
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl<T>(Var left, ValueVar<T> right) => new Context(_scope, _bindings.Add(left, right));
 
         /// <summary>
         /// Unifies an unbound and a sequence variables.
@@ -128,10 +126,7 @@ namespace Kanrenmo
         /// <param name="left">The unbound variable.</param>
         /// <param name="right">The sequence variable.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(Var left, SequenceVar right)
-        {
-            yield return new Context(_scope, _bindings.Add(left, right));
-        }
+        private Context UnifyImpl(Var left, SequenceVar right) => new Context(_scope, _bindings.Add(left, right));
 
         /// <summary>
         /// Unifies a bound and an unbound variables.
@@ -139,32 +134,26 @@ namespace Kanrenmo
         /// <typeparam name="T">Bound variable value type</typeparam>
         /// <param name="left">The bound variable.</param>
         /// <param name="right">The unbound variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<T>(ValueVar<T> left, Var right) => UnifyImpl(right, left);
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl<T>(ValueVar<T> left, Var right) => UnifyImpl(right, left);
 
         /// <summary>
         /// Unifies two bound variables.
         /// </summary>
         /// <param name="left">The left variable.</param>
         /// <param name="right">The right variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<TLeft, TRight>(ValueVar<TLeft> left, ValueVar<TRight> right)
-        {
-            if (Equals(left, right))
-            {
-                yield return this;
-            }
-        }
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl<TLeft, TRight>(ValueVar<TLeft> left, ValueVar<TRight> right) => 
+            Equals(left, right) ? this : null;
 
         /// <summary>
         /// Unifies a value var with a sequence var.
         /// </summary>
         /// <param name="left">The value variable.</param>
         /// <param name="right">The sequence variable.</param>
-        /// <returns>The resulting context enumeration</returns>
+        /// <returns>The resulting context</returns>
         // ReSharper disable UnusedParameter.Local
-        private IEnumerable<Context> UnifyImpl<TLeft>(ValueVar<TLeft> left, SequenceVar right)
-            => Enumerable.Empty<Context>();
+        private Context UnifyImpl<TLeft>(ValueVar<TLeft> left, SequenceVar right) => null;
         // ReSharper restore UnusedParameter.Local
 
         /// <summary>
@@ -172,28 +161,26 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="left">The sequence variable.</param>
         /// <param name="right">The unbound variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(SequenceVar left, Var right)
-            => UnifyImpl(right, left);
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl(SequenceVar left, Var right) => UnifyImpl(right, left);
 
         /// <summary>
         /// Unifies a sequence var with a value var.
         /// </summary>
         /// <param name="left">The sequence variable.</param>
         /// <param name="right">The value variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl<TRight>(SequenceVar left, ValueVar<TRight> right)
-            => UnifyImpl(right, left);
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl<TRight>(SequenceVar left, ValueVar<TRight> right) => UnifyImpl(right, left);
 
         /// <summary>
         /// Unifies two sequence variables.
         /// </summary>
         /// <param name="left">The first sequence variable.</param>
         /// <param name="right">The second sequence variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> UnifyImpl(SequenceVar left, SequenceVar right)
+        /// <returns>The resulting context</returns>
+        private Context UnifyImpl(SequenceVar left, SequenceVar right)
         {
-            IEnumerable<Context> result = Enumerable.Repeat(this, 1);
+            var result = this;
 
             using (var leftEnumerator = left.GetEnumerator())
             {
@@ -211,14 +198,12 @@ namespace Kanrenmo
 
                         if (moreLeft ^ moreRight)
                         {
-                            return Enumerable.Empty<Context>();
+                            return null;
                         }
 
                         var leftItem = leftEnumerator.Current;
                         var rightItem = rightEnumerator.Current;
-                        result = result
-                            .Select(c => c.Unify(leftItem, rightItem))
-                            .SelectMany(c => c);
+                        result = result.UnifySingle(leftItem, rightItem);
                     }
                 }
             }
