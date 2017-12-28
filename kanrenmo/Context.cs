@@ -49,12 +49,12 @@ namespace Kanrenmo
                         // and apply the relation
                         .Apply(relation)
                         // restore the scope for each resulting context
-                        .Select(child => new Context(parent._scope, child._bindings)));
+                        .Select(child => new Context(parent._scope, child._environment)));
 
         /// <summary>
         /// Unifies two variables.
         /// </summary>
-        /// <param name="left">The left variable.</param>
+        /// <param name="left">The unbound variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>Resulting context enumeration</returns>
         internal IEnumerable<Context> Unify(Var left, Var right)
@@ -68,22 +68,48 @@ namespace Kanrenmo
         /// <summary>
         /// Unifies two variables returning the new context.
         /// </summary>
-        /// <param name="left">The left.</param>
+        /// <param name="left">The unbound.</param>
         /// <param name="right">The right.</param>
         /// <returns>The new context or null if unification fails</returns>
-        private Context UnifySingle(Var left, Var right) => UnifyImpl((dynamic) Reify(left), (dynamic) Reify(right));
+        private Context UnifySingle(Var left, Var right)
+        {
+            left = Reify(left);
+            right = Reify(right);
+
+            if (!left.Bound)
+            {
+                return UnifyUnbound(left, right);
+            }
+
+            if (!right.Bound)
+            {
+                return UnifyUnbound(right, left);
+            }
+
+            if (left is ValueVar leftVal && right is ValueVar rightVal)
+            {
+                return UnifyValues(leftVal, rightVal);
+            }
+                
+            if (left is SequenceVar leftSeq && right is SequenceVar rightSeq)
+            {
+                return UnifySequences(leftSeq, rightSeq);
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Context" /> class.
         /// </summary>
         /// <param name="scope">The scope variables.</param>
-        /// <param name="bindings">The bindings tree.</param>
+        /// <param name="environment">The environment containing existing variable bindings.</param>
         private Context(
             ImmutableDictionary<Var, Var> scope = null, 
-            ImmutableDictionary<Var, Var> bindings = null)
+            ImmutableDictionary<Var, Var> environment = null)
         {
             _scope = scope ?? ImmutableDictionary<Var, Var>.Empty;
-            _bindings = bindings ?? ImmutableDictionary<Var, Var>.Empty;
+            _environment = environment ?? ImmutableDictionary<Var, Var>.Empty;
         }
 
         /// <summary>
@@ -94,7 +120,7 @@ namespace Kanrenmo
         private Context With(params Var[] variables) =>
             new Context(
                 _scope.SetItems(variables.Select(v => new KeyValuePair<Var, Var>(v, new Var()))),
-                _bindings);
+                _environment);
 
         /// <summary>
         /// Applies the specified relation to this context.
@@ -106,71 +132,19 @@ namespace Kanrenmo
         /// <summary>
         /// Unifies two unbound variables.
         /// </summary>
-        /// <param name="left">The left variable.</param>
-        /// <param name="right">The right variable.</param>
+        /// <param name="unbound">The unbound variable.</param>
+        /// <param name="other">The other variable.</param>
         /// <returns>The resulting context</returns>
-        private Context UnifyImpl(Var left, Var right) => new Context(_scope, _bindings.Add(left, right));
-
-        /// <summary>
-        /// Unifies an unbound and a bound variables.
-        /// </summary>
-        /// <typeparam name="T">Bound variable value type</typeparam>
-        /// <param name="left">The unbound variable.</param>
-        /// <param name="right">The bound variable.</param>
-        /// <returns>The resulting context</returns>
-        private Context UnifyImpl<T>(Var left, ValueVar<T> right) => new Context(_scope, _bindings.Add(left, right));
-
-        /// <summary>
-        /// Unifies an unbound and a sequence variables.
-        /// </summary>
-        /// <param name="left">The unbound variable.</param>
-        /// <param name="right">The sequence variable.</param>
-        /// <returns>The resulting context enumeration</returns>
-        private Context UnifyImpl(Var left, SequenceVar right) => new Context(_scope, _bindings.Add(left, right));
-
-        /// <summary>
-        /// Unifies a bound and an unbound variables.
-        /// </summary>
-        /// <typeparam name="T">Bound variable value type</typeparam>
-        /// <param name="left">The bound variable.</param>
-        /// <param name="right">The unbound variable.</param>
-        /// <returns>The resulting context</returns>
-        private Context UnifyImpl<T>(ValueVar<T> left, Var right) => UnifyImpl(right, left);
+        private Context UnifyUnbound(Var unbound, Var other) => new Context(_scope, _environment.Add(unbound, other));
 
         /// <summary>
         /// Unifies two bound variables.
         /// </summary>
-        /// <param name="left">The left variable.</param>
+        /// <param name="left">The unbound variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>The resulting context</returns>
-        private Context UnifyImpl<TLeft, TRight>(ValueVar<TLeft> left, ValueVar<TRight> right) => 
+        private Context UnifyValues(ValueVar left, ValueVar right) => 
             Equals(left, right) ? this : null;
-
-        /// <summary>
-        /// Unifies a value var with a sequence var.
-        /// </summary>
-        /// <param name="left">The value variable.</param>
-        /// <param name="right">The sequence variable.</param>
-        /// <returns>The resulting context</returns>
-        // ReSharper disable UnusedParameter.Local
-        private Context UnifyImpl<TLeft>(ValueVar<TLeft> left, SequenceVar right) => null;
-        // ReSharper restore UnusedParameter.Local
-
-        /// <summary>
-        /// Unifies a sequence var with unbound var.
-        /// </summary>
-        /// <param name="left">The sequence variable.</param>
-        /// <param name="right">The unbound variable.</param>
-        /// <returns>The resulting context</returns>
-        private Context UnifyImpl(SequenceVar left, Var right) => UnifyImpl(right, left);
-
-        /// <summary>
-        /// Unifies a sequence var with a value var.
-        /// </summary>
-        /// <param name="left">The sequence variable.</param>
-        /// <param name="right">The value variable.</param>
-        /// <returns>The resulting context</returns>
-        private Context UnifyImpl<TRight>(SequenceVar left, ValueVar<TRight> right) => UnifyImpl(right, left);
 
         /// <summary>
         /// Unifies two sequence variables.
@@ -178,7 +152,7 @@ namespace Kanrenmo
         /// <param name="left">The first sequence variable.</param>
         /// <param name="right">The second sequence variable.</param>
         /// <returns>The resulting context</returns>
-        private Context UnifyImpl(SequenceVar left, SequenceVar right)
+        private Context UnifySequences(SequenceVar left, SequenceVar right)
         {
             var result = this;
 
@@ -251,7 +225,7 @@ namespace Kanrenmo
 
             while (true)
             {
-                if (!_bindings.TryGetValue(bound, out var result))
+                if (!_environment.TryGetValue(bound, out var result))
                 {
                     return bound;
                 }
@@ -273,10 +247,10 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variables">The variables.</param>
         /// <returns>A dictionary of variables with their bindings</returns>
-        private ImmutableDictionary<Var, Var> QueryAll(Var[] variables) =>
-            ImmutableDictionary<Var, Var>.Empty.AddRange(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
+        private Binding QueryAll(IEnumerable<Var> variables) =>
+            new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
 
-        private readonly ImmutableDictionary<Var, Var> _bindings;
+        private readonly ImmutableDictionary<Var, Var> _environment;
         private readonly ImmutableDictionary<Var, Var> _scope;
     }
 }
