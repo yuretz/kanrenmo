@@ -1,0 +1,96 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+//  
+// This is an auto-generated file. DO NOT EDIT IT DIRECTLY unless you know what you are doing 
+//
+ 
+using System;
+using System.Collections.Generic;
+namespace Kanrenmo
+{
+	public partial class Context
+	{
+<#
+for(int count = 1; count < 9; count ++)
+{
+	var funcArgTypes = string.Join(", ", Enumerable.Repeat("Var", count).ToArray());
+    var runArgs = string.Join(", ", Enumerable.Range(1, count).Select(i => ("v" + i)).ToArray());
+    var invokeArgs = string.Join(", ", Enumerable.Range(1, count).Select(i => ("Var a" + i)).ToArray());
+    var invokeBindings = string.Join(" & ", Enumerable.Range(1, count).Select(i => ("a" + i + " == v" + i)).ToArray());
+    var relationArgTypes = string.Join(", ", Enumerable.Repeat("Relation", count).ToArray());
+    var invokeRelationArgs = string.Join(", ", Enumerable.Range(1, count).Select(i => ("Relation r" + i)).ToArray());
+    var relationArgs = string.Join(", ", Enumerable.Range(1, count).Select(i => ("r" + i)).ToArray());
+
+#>
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<<#=funcArgTypes#>, Relation> function)
+		{
+<# 
+	for(int i = 1; i <= count; i++)
+    {
+#>
+            var v<#=i#> = new Var();
+<#
+    }    
+#>
+            return Run(function(<#=runArgs#>), <#=runArgs#>);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<<#=funcArgTypes#>, Relation> function)
+		{
+<# 
+	for(int i = 1; i <= count; i++)
+    {
+#>
+            var v<#=i#> = new Var();
+<#
+    }
+#>
+            return Fresh(function(<#=runArgs#>), <#=runArgs#>);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<<#=funcArgTypes#>, Relation> function, <#=invokeArgs#>)
+        {
+<# 
+	for(int i = 1; i <= count; i++)
+    {
+#>
+            var v<#=i#> = new Var();
+<#
+    }
+#>
+            return new Relation(
+                context => 
+                    Fresh(<#=invokeBindings#> & function(<#=runArgs#>),
+                        <#=runArgs#>).Execute(context));
+        }
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<<#=relationArgTypes#>, Relation> function, <#=invokeRelationArgs#>) =>
+            new Relation(context => function(<#=relationArgs#>).Execute(context));
+
+<#
+}
+#>
+	}
+}

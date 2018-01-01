@@ -8,21 +8,20 @@ namespace Kanrenmo
     {
         internal Binding(IEnumerable<KeyValuePair<Var, Var>> pairs)
         {
-            var list = pairs.ToList();
-            _bindings = list.ToDictionary(pair => pair.Key, pair => pair.Value);
-            _variables = list.Select(pair => pair.Key).ToList();
+            _pairs = pairs.ToList();
+            _bindings = _pairs.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
 
         Var IReadOnlyDictionary<Var, Var>.this[Var key] => _bindings[key];
 
 
-        Var IReadOnlyList<Var>.this[int index] => _bindings[_variables[index]];
+        Var IReadOnlyList<Var>.this[int index] => _pairs[index].Value;
 
 
-        public int Count => _variables.Count;
-        public IEnumerable<Var> Keys => _variables.AsReadOnly();
-        public IEnumerable<Var> Values => _variables.Select(variable => _bindings[variable]);
+        public int Count => _pairs.Count;
+        public IEnumerable<Var> Keys => _pairs.Select(pair => pair.Key);
+        public IEnumerable<Var> Values => _pairs.Select(pair => pair.Value);
         public bool ContainsKey(Var key) => _bindings.ContainsKey(key);
 
 
@@ -30,17 +29,16 @@ namespace Kanrenmo
 
 
         IEnumerator<KeyValuePair<Var, Var>> IEnumerable<KeyValuePair<Var, Var>>.GetEnumerator() =>
-            _variables
-                .Select(variable => new KeyValuePair<Var, Var>(variable, _bindings[variable]))
-                .GetEnumerator();
+            _pairs.GetEnumerator();
 
 
-        IEnumerator IEnumerable.GetEnumerator() => _variables.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => Values.GetEnumerator();
 
-        IEnumerator<Var> IEnumerable<Var>.GetEnumerator() => _variables.GetEnumerator();
+        IEnumerator<Var> IEnumerable<Var>.GetEnumerator() => Values.GetEnumerator();
         
 
         private readonly Dictionary<Var, Var> _bindings;
-        private readonly List<Var> _variables;
+
+        private readonly List<KeyValuePair<Var, Var>> _pairs;
     }
 }

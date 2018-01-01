@@ -1,113 +1,425 @@
-﻿using System;
-
+﻿
+//  
+// This is an auto-generated file. DO NOT EDIT IT DIRECTLY unless you know what you are doing 
+//
+ 
+using System;
+using System.Collections.Generic;
 namespace Kanrenmo
 {
-    public partial class Context
-    {
+	public partial class Context
+	{
         /// <summary>
-        /// Invokes the specified function.
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <returns>Resulting relation</returns>
-        public static Relation Invoke(Func<Relation> function) =>
-            new Relation(context => function().Execute(context));
-      
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Relation> function)
+		{
+            var v1 = new Var();
+            return Run(function(v1), v1);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Relation> function)
+		{
+            var v1 = new Var();
+            return Fresh(function(v1), v1);
+		}
 
         /// <summary>
-        /// Invokes the specified function.
-        /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument">The argument value to pass to the function.</param>
-        /// <returns>Resulting relation</returns>
-        public static Relation Invoke(Func<Var, Relation> function, Var argument)
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Relation> function, Var a1)
         {
-            var param = new Var();
-            return new Relation(context => Fresh((param == argument) & function(param), param).Execute(context));
+            var v1 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & function(v1),
+                        v1).Execute(context));
         }
 
         /// <summary>
-        /// Invokes the specified function.
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation> function, Relation r1) =>
+            new Relation(context => function(r1).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument1">The first argument value to pass to the function.</param>
-        /// <param name="argument2">The second argument value to pass to the function.</param>
-        /// <returns>
-        /// Resulting relation
-        /// </returns>
-        public static Relation Invoke(Func<Var, Var, Relation> function, Var argument1, Var argument2)
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            return Run(function(v1, v2), v1, v2);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            return Fresh(function(v1, v2), v1, v2);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Relation> function, Var a1, Var a2)
         {
-            var param1 = new Var();
-            var param2 = new Var();
-            return new Relation(context => 
-                Fresh((param1 == argument1) 
-                        & (param2 == argument2)
-                        & function(param1, param2), 
-                    param1, 
-                    param2).Execute(context));
+            var v1 = new Var();
+            var v2 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & function(v1, v2),
+                        v1, v2).Execute(context));
         }
 
         /// <summary>
-        /// Invokes the specified function.
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation> function, Relation r1, Relation r2) =>
+            new Relation(context => function(r1, r2).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument1">The first argument value to pass to the function.</param>
-        /// <param name="argument2">The second argument value to pass to the function.</param>
-        /// <param name="argument3">The third argument value to pass to the function.</param>
-        /// <returns>
-        /// Resulting relation
-        /// </returns>
-        public static Relation Invoke(Func<Var, Var, Var, Relation> function, Var argument1, Var argument2, 
-            Var argument3)
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            return Run(function(v1, v2, v3), v1, v2, v3);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            return Fresh(function(v1, v2, v3), v1, v2, v3);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Relation> function, Var a1, Var a2, Var a3)
         {
-            var param1 = new Var();
-            var param2 = new Var();
-            var param3 = new Var();
-            return new Relation(context =>
-                Fresh((param1 == argument1)
-                      & (param2 == argument2)
-                      & (param3 == argument3)
-                      & function(param1, param2, param3),
-                    param1,
-                    param2,
-                    param3).Execute(context));
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & function(v1, v2, v3),
+                        v1, v2, v3).Execute(context));
         }
 
         /// <summary>
-        /// Invokes the specified function.
-        /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument">The argument value to pass to the function.</param>
-        /// <returns>Resulting relation</returns>
-        public static Relation Invoke(Func<Relation, Relation> function, Relation argument) =>
-            new Relation(context => function(argument).Execute(context));
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3) =>
+            new Relation(context => function(r1, r2, r3).Execute(context));
 
         /// <summary>
-        /// Invokes the specified function.
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument1">The first argument value to pass to the function.</param>
-        /// <param name="argument2">The second argument value to pass to the function.</param>
-        /// <returns>Resulting relation</returns>
-        public static Relation Invoke(
-            Func<Relation, Relation, Relation> function, 
-            Relation argument1,
-            Relation argument2) =>
-            new Relation(context => function(argument1, argument2).Execute(context));
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            return Run(function(v1, v2, v3, v4), v1, v2, v3, v4);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            return Fresh(function(v1, v2, v3, v4), v1, v2, v3, v4);
+		}
 
         /// <summary>
-        /// Invokes the specified function.
-        /// </summary>
-        /// <param name="function">The function to invoke.</param>
-        /// <param name="argument1">The first argument value to pass to the function.</param>
-        /// <param name="argument2">The second argument value to pass to the function.</param>
-        /// <param name="argument3">The third argument value to pass to the function.</param>
-        /// <returns>Resulting relation</returns>
-        public static Relation Invoke(
-            Func<Relation, Relation, Relation, Relation> function,
-            Relation argument1,
-            Relation argument2,
-            Relation argument3) =>
-            new Relation(context => function(argument1, argument2, argument3).Execute(context));
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4)
+        {
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & function(v1, v2, v3, v4),
+                        v1, v2, v3, v4).Execute(context));
+        }
 
-    }
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4) =>
+            new Relation(context => function(r1, r2, r3, r4).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            return Run(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            return Fresh(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5)
+        {
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & function(v1, v2, v3, v4, v5),
+                        v1, v2, v3, v4, v5).Execute(context));
+        }
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5) =>
+            new Relation(context => function(r1, r2, r3, r4, r5).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            return Run(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            return Fresh(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6)
+        {
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & function(v1, v2, v3, v4, v5, v6),
+                        v1, v2, v3, v4, v5, v6).Execute(context));
+        }
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6) =>
+            new Relation(context => function(r1, r2, r3, r4, r5, r6).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            return Run(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            return Fresh(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7)
+        {
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & function(v1, v2, v3, v4, v5, v6, v7),
+                        v1, v2, v3, v4, v5, v6, v7).Execute(context));
+        }
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7) =>
+            new Relation(context => function(r1, r2, r3, r4, r5, r6, r7).Execute(context));
+
+        /// <summary>
+        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The enumeration of execution results</returns>
+		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            var v8 = new Var();
+            return Run(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
+		}
+        
+        /// <summary>
+        /// Creates fresh variables specified by the function parameters for the relation 
+        /// specified by the function body
+        /// </summary>
+        /// <param name="function">The relation function.</param>
+        /// <returns>The new relation with fresh variables</returns>
+		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		{
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            var v8 = new Var();
+            return Fresh(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
+		}
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified variable arguments.
+        /// </summary>    
+        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7, Var a8)
+        {
+            var v1 = new Var();
+            var v2 = new Var();
+            var v3 = new Var();
+            var v4 = new Var();
+            var v5 = new Var();
+            var v6 = new Var();
+            var v7 = new Var();
+            var v8 = new Var();
+            return new Relation(
+                context => 
+                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & a8 == v8 & function(v1, v2, v3, v4, v5, v6, v7, v8),
+                        v1, v2, v3, v4, v5, v6, v7, v8).Execute(context));
+        }
+
+        /// <summary>
+        /// Invokes the specified relation function with the specified relation arguments.
+        /// </summary> 
+        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7, Relation r8) =>
+            new Relation(context => function(r1, r2, r3, r4, r5, r6, r7, r8).Execute(context));
+
+	}
 }

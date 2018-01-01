@@ -18,12 +18,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ContextExt2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ContextExt2.tt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ContextExt.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ContextExt.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ContextExt.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ContextExt.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ContextExt.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ContextExt.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

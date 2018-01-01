@@ -26,7 +26,7 @@ namespace Kanrenmo
         /// <param name="relation">The relation to run.</param>
         /// <param name="variables">The variables to query.</param>
         /// <returns>Variable bindings enumeration</returns>
-        public static IEnumerable<IReadOnlyDictionary<Var, Var>> Run(Relation relation, params Var[] variables) =>
+        public static IEnumerable<Binding> Run(Relation relation, params Var[] variables) =>
             new Context()
                 // add vars to context
                 .With(variables)
@@ -50,6 +50,14 @@ namespace Kanrenmo
                         .Apply(relation)
                         // restore the scope for each resulting context
                         .Select(child => new Context(parent._scope, child._environment)));
+
+        /// <summary>
+        /// Invokes the specified relation function.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <returns>Resulting relation</returns>
+        public static Relation Invoke(Func<Relation> function) =>
+            new Relation(context => function().Execute(context));
 
         /// <summary>
         /// Unifies two variables.
