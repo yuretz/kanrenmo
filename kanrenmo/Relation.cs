@@ -54,26 +54,23 @@ namespace Kanrenmo
         {
             IEnumerator<Context> leftEnum = null;
             IEnumerator<Context> rightEnum = null;
-            bool any;
-            do
+            var anyLeft = true;
+            var anyRight = true;
+            while (anyLeft || anyRight)
             {
-                any = false;
-
-                leftEnum = leftEnum ?? left.Execute(context).GetEnumerator();
-                if (leftEnum.MoveNext())
+                if (anyLeft 
+                    && (anyLeft = (leftEnum ?? (leftEnum = left.Execute(context).GetEnumerator())).MoveNext()))
                 {
-                    any = true;
                     yield return leftEnum.Current;
                 }
 
                 rightEnum = rightEnum ?? right.Execute(context).GetEnumerator();
-                if (rightEnum.MoveNext())
+                if (anyRight 
+                    && (anyRight = (rightEnum ?? (rightEnum = right.Execute(context).GetEnumerator())).MoveNext()))
                 {
-                    any = true;
                     yield return rightEnum.Current;
                 }
-
-            } while (any);
+            }
         }
 
         private static IEnumerable<Context> Product(Context context, Relation left, Relation right) => 

@@ -57,7 +57,7 @@ namespace Kanrenmo
         /// <param name="function">The function to invoke.</param>
         /// <returns>Resulting relation</returns>
         public static Relation Invoke(Func<Relation> function) =>
-            new Relation(context => function().Execute(context));
+            new Relation(function);
 
         /// <summary>
         /// Unifies two variables.
