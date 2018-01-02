@@ -64,7 +64,6 @@ namespace Kanrenmo
                     yield return leftEnum.Current;
                 }
 
-                rightEnum = rightEnum ?? right.Execute(context).GetEnumerator();
                 if (anyRight 
                     && (anyRight = (rightEnum ?? (rightEnum = right.Execute(context).GetEnumerator())).MoveNext()))
                 {
