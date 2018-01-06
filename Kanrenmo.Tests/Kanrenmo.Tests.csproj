@@ -92,6 +92,7 @@
     <Compile Include="BasicTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReasonedTests11.cs" />
+    <Compile Include="ReasonedTests12.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kanrenmo\Kanrenmo.csproj">

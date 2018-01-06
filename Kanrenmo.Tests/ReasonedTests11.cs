@@ -8,7 +8,7 @@ using static Kanrenmo.Context;
 namespace Kanrenmo.Tests
 {
     /// <summary>
-    /// Tests from Reasoned Schemer
+    /// Tests from Reasoned Schemer (Chapter 1)
     /// </summary>
     /// <remarks>
     /// See original tests at https://github.com/miniKanren/simple-miniKanren/blob/master/mktests.scm

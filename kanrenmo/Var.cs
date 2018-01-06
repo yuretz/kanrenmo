@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Kanrenmo
 {
@@ -45,13 +44,22 @@ namespace Kanrenmo
         public static implicit operator Var(string value) => new ValueVar<string>(value);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cref="char"/> to <see cref="Var"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator Var(char value) => new ValueVar<char>(value);
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="Var"/>[] to <see cref="Var"/>.
         /// </summary>
         /// <param name="variables">The variables.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Var(Var[] variables) => Sequence(variables); 
+        public static implicit operator Var(Var[] variables) => Context.Seq(variables); 
 
         /// <summary>
         /// Equality (unification) operator == between two variables.
@@ -72,13 +80,6 @@ namespace Kanrenmo
         /// The result of the operation.
         /// </returns>
         public static Relation operator !=(Var left, Var right) => new Relation(context => throw new NotImplementedException());
-
-        /// <summary>
-        /// Converts variable enumeration to a <see cref="SequenceVar"/>
-        /// </summary>
-        /// <param name="variables">The variables enumeration.</param>
-        /// <returns>new variable instance</returns>
-        public static SequenceVar Sequence(IEnumerable<Var> variables) => Sequence(variables.GetEnumerator());
 
         /// <summary>
         /// The unique variable identifier
@@ -110,8 +111,24 @@ namespace Kanrenmo
         /// </returns>
         public override int GetHashCode() => Id;
 
-        private static SequenceVar Sequence(IEnumerator<Var> variables) => 
-            !variables.MoveNext() ? SequenceVar.Empty : new SequenceVar(variables.Current, Sequence(variables));
+        /// <summary>
+        /// Constructs the sequence variable by combining this variable (head) with another one (tail).
+        /// </summary>
+        /// <param name="tail">The tail variable.</param>
+        /// <returns>The constructed sequence</returns>
+        public SequenceVar Cons(Var tail) => new SequenceVar(this, tail);
+
+        /// <summary>
+        /// Gets the head element of the sequence.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="SequenceVar"/></exception>
+        public virtual Var Head() => throw new InvalidOperationException($"Variable {Id} is not a sequence");
+
+        /// <summary>
+        /// Gets the tail subsequence of the sequence.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="SequenceVar"/></exception>
+        public virtual Var Tail() => throw new InvalidOperationException($"Variable {Id} is not a sequence");
 
         private static int _id;
     }

@@ -59,6 +59,23 @@ namespace Kanrenmo
         public static Relation Invoke(Func<Relation> function) =>
             new Relation(function);
 
+
+        public static Var Var<T>(T value) => (ValueVar<T>) value;
+
+        /// <summary>
+        /// Converts variable enumeration to a <see cref="SequenceVar"/>
+        /// </summary>
+        /// <param name="variables">The variables enumeration.</param>
+        /// <returns>new sequence variable instance</returns>
+        public static SequenceVar Seq(IEnumerable<Var> variables) => Seq(variables.GetEnumerator());
+
+        /// <summary>
+        /// Converts variables to a <see cref="SequenceVar"/>
+        /// </summary>
+        /// <param name="variables">The variables.</param>
+        /// <returns>new sequence variable instance</returns>
+        public static SequenceVar Seq(params Var[] variables) => Seq(variables.AsEnumerable());
+
         /// <summary>
         /// Unifies two variables.
         /// </summary>
@@ -72,6 +89,8 @@ namespace Kanrenmo
             return result == null ? Enumerable.Empty<Context>() : Enumerable.Repeat(result, 1);
         }
 
+        private static SequenceVar Seq(IEnumerator<Var> variables) =>
+            !variables.MoveNext() ? SequenceVar.Empty : variables.Current.Cons(Seq(variables));
 
         /// <summary>
         /// Unifies two variables returning the new context.
@@ -154,6 +173,7 @@ namespace Kanrenmo
         private Context UnifyValues(ValueVar left, ValueVar right) => 
             Equals(left, right) ? this : null;
 
+
         /// <summary>
         /// Unifies two sequence variables.
         /// </summary>
@@ -162,36 +182,15 @@ namespace Kanrenmo
         /// <returns>The resulting context</returns>
         private Context UnifySequences(SequenceVar left, SequenceVar right)
         {
-            var result = this;
-
-            using (var leftEnumerator = left.GetEnumerator())
+            if (left.IsEmpty || right.IsEmpty)
             {
-                using (var rightEnumerator = right.GetEnumerator())
-                {
-                    while (true)
-                    {
-                        var moreLeft = leftEnumerator.MoveNext();
-                        var moreRight = rightEnumerator.MoveNext();
-
-                        if (!(moreLeft || moreRight))
-                        {
-                            return result;
-                        }
-
-                        if (moreLeft ^ moreRight)
-                        {
-                            return null;
-                        }
-
-                        var leftItem = leftEnumerator.Current;
-                        var rightItem = rightEnumerator.Current;
-                        result = result.UnifySingle(leftItem, rightItem);
-                    }
-                }
+                return left.IsEmpty && right.IsEmpty ? this : null;
             }
-
-
+            
+            return UnifySingle(left.Head(), right.Head())
+                    .UnifySingle(left.Tail(), right.Tail());
         }
+            
 
         /// <summary>
         /// Reifies the specified variable.
@@ -228,7 +227,8 @@ namespace Kanrenmo
         {
             if (!_scope.TryGetValue(variable, out var bound))
             {
-                throw new InvalidOperationException($"Variable Id ${variable.Id} is not in scope");
+                bound = variable;
+                //throw new InvalidOperationException($"Variable Id ${variable.Id} is not in scope");
             }
 
             while (true)
@@ -248,7 +248,7 @@ namespace Kanrenmo
         /// <param name="sequence">The sequence variable to reify.</param>
         /// <returns>reified sequence</returns>
         private Var ReifyImpl(SequenceVar sequence) => 
-            sequence.IsEmpty ? SequenceVar.Empty : new SequenceVar(Reify(sequence.Head), Reify(sequence.Tail));
+            sequence.IsEmpty ? SequenceVar.Empty : new SequenceVar(Reify(sequence.Head()), Reify(sequence.Tail()));
 
         /// <summary>
         /// Queries all the provided variables.

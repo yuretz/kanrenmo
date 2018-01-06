@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kanrenmo
 {
@@ -21,8 +22,8 @@ namespace Kanrenmo
         /// <param name="tail">Sequence tail.</param>
         internal SequenceVar(Var head, Var tail)
         {
-            Head = head;
-            Tail = tail ?? Empty;
+            _head = head;
+            _tail = tail ?? Empty;
         }
 
         /// <summary>
@@ -33,17 +34,19 @@ namespace Kanrenmo
         /// <summary>
         /// Gets a value indicating whether this sequence is empty.
         /// </summary>
-        public bool IsEmpty => Equals(Head, null);
+        public bool IsEmpty => Equals(_head, null);
 
         /// <summary>
-        /// The sequence head
+        /// Gets the head element of the sequence.
         /// </summary>
-        public readonly Var Head;
+        /// <returns>The head element</returns>
+        public override Var Head() => _head;
 
         /// <summary>
-        /// The sequence tail
+        /// Gets the tail subsequence of the sequence.
         /// </summary>
-        public readonly Var Tail;
+        /// <returns>The tail element</returns>
+        public override Var Tail() => _tail;
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -53,7 +56,6 @@ namespace Kanrenmo
         /// </returns>
         public IEnumerator<Var> GetEnumerator() => new SequenceEnumerator(this);
 
-
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
@@ -62,9 +64,36 @@ namespace Kanrenmo
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => new SequenceEnumerator(this);
 
-        private class SequenceEnumerator : IEnumerator<Var>
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object obj) => (obj is SequenceVar other) && this.SequenceEqual(other);
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() =>
+            this.Aggregate(5381, (hash, variable) => hash * 33 ^ (variable?.GetHashCode() ?? 0));
+        
+
+        private struct SequenceEnumerator : IEnumerator<Var>
         {
-            public SequenceEnumerator(SequenceVar start) => _start = start;
+            public SequenceEnumerator(SequenceVar start)
+            {
+                _start = start;
+                _started = false;
+                Current = null;
+                _variable = null;
+            }
+            
 
             public bool MoveNext()
             {
@@ -78,11 +107,11 @@ namespace Kanrenmo
                 switch (_variable)
                 {
                     case null:
-                    case SequenceVar sequence when Equals(sequence.Head, null):
+                    case SequenceVar sequence when Equals(sequence._head, null):
                         return false;
                     case SequenceVar sequence:
-                        Current = sequence.Head;
-                        _variable = sequence.Tail;
+                        Current = sequence._head;
+                        _variable = sequence._tail;
                         return true;
                     default:
                         Current = _variable;
@@ -112,5 +141,14 @@ namespace Kanrenmo
             private Var _variable;
         }
 
+        /// <summary>
+        /// The sequence head
+        /// </summary>
+        private readonly Var _head;
+
+        /// <summary>
+        /// The sequence tail
+        /// </summary>
+        private readonly Var _tail;
     }
 }
