@@ -247,18 +247,9 @@ namespace Kanrenmo
             if (!_scope.TryGetValue(variable, out var bound))
             {
                 bound = variable;
-                //throw new InvalidOperationException($"Variable Id ${variable.Id} is not in scope");
             }
 
-            while (true)
-            {
-                if (!_environment.TryGetValue(bound, out var result))
-                {
-                    return bound;
-                }
-
-                bound = result;
-            }
+            return !_environment.TryGetValue(bound, out var result) ? bound : Reify(result);
         }
 
         /// <summary>

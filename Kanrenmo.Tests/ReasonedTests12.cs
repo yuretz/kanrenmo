@@ -276,14 +276,28 @@ namespace Kanrenmo.Tests
         '(a c o r n)
 
            ))
+*/
+        [Fact]
+        public void Test12_19()
+        {
+            Assert.Equal(Seq('c', 'o', 'r', 'n'), Seq('a', 'c', 'o', 'r', 'n').Tail());
+        }
 
+/*
 
         (test-check "testc12.tex-20" 
         (run* (x)
           (cdro '(c o r n) `(,x r n)))
 
         (list 'o))
+*/
+        [Fact]
+        public void Test12_20()
+        {
+            AssertOneBound('o', Run(x => Seq('c', 'o', 'r', 'n').Tailo(Seq(x, 'r', 'n'))));
+        }
 
+/*
         (test-check "testc12.tex-21" `(o r n)
 
            (cdr 
@@ -291,7 +305,14 @@ namespace Kanrenmo.Tests
         `(c o r n)
 
            ))
+*/
+        [Fact]
+        public void Test12_21()
+        {
+            Assert.Equal(Seq('o', 'r', 'n'), Seq('c', 'o', 'r', 'n').Tail());
+        }
 
+/*
 
         (test-check "testc12.tex-22" 
         (run* (l)
@@ -301,7 +322,16 @@ namespace Kanrenmo.Tests
             (== 'a x)))
 
         (list `(a c o r n)))
+*/
+        [Fact]
+        public void Test12_22()
+        {
+            AssertOneBound(
+                CheckList(new object[] {'a', 'c', 'o', 'r', 'n'}),
+                Run(l => Fresh(x => l.Tailo(Seq('c', 'o', 'r', 'n')) & l.Heado(x) & x == 'a')));
+        }
 
+/*
 
         (define conso
           (lambda (a d p)
