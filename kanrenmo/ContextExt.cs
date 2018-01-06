@@ -5,6 +5,7 @@
  
 using System;
 using System.Collections.Generic;
+using Kanrenmo.Annotations;
 namespace Kanrenmo
 {
 	public partial class Context
@@ -14,7 +15,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Relation> function)
 		{
             var v1 = new Var();
             return Run(function(v1), v1);
@@ -26,7 +28,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Relation> function)
 		{
             var v1 = new Var();
             return Fresh(function(v1), v1);
@@ -34,8 +37,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Relation> function, Var a1)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Relation> function, Var a1)
         {
             var v1 = new Var();
             return new Relation(
@@ -46,8 +50,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation> function, Relation r1) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation> function, Relation r1) =>
             new Relation(context => function(r1).Execute(context));
 
         /// <summary>
@@ -55,7 +60,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -68,7 +74,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -77,8 +84,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Relation> function, Var a1, Var a2)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Relation> function, Var a1, Var a2)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -90,8 +98,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation> function, Relation r1, Relation r2) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation> function, Relation r1, Relation r2) =>
             new Relation(context => function(r1, r2).Execute(context));
 
         /// <summary>
@@ -99,7 +108,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -113,7 +123,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -123,8 +134,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Relation> function, Var a1, Var a2, Var a3)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Relation> function, Var a1, Var a2, Var a3)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -137,8 +149,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3) =>
             new Relation(context => function(r1, r2, r3).Execute(context));
 
         /// <summary>
@@ -146,7 +159,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -161,7 +175,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -172,8 +187,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -187,8 +203,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4) =>
             new Relation(context => function(r1, r2, r3, r4).Execute(context));
 
         /// <summary>
@@ -196,7 +213,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -212,7 +230,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -224,8 +243,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -240,8 +260,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5) =>
             new Relation(context => function(r1, r2, r3, r4, r5).Execute(context));
 
         /// <summary>
@@ -249,7 +270,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -266,7 +288,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -279,8 +302,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -296,8 +320,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6) =>
             new Relation(context => function(r1, r2, r3, r4, r5, r6).Execute(context));
 
         /// <summary>
@@ -305,7 +330,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -323,7 +349,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -337,8 +364,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -355,8 +383,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7) =>
             new Relation(context => function(r1, r2, r3, r4, r5, r6, r7).Execute(context));
 
         /// <summary>
@@ -364,7 +393,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -383,7 +413,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -398,8 +429,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7, Var a8)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function, Var a1, Var a2, Var a3, Var a4, Var a5, Var a6, Var a7, Var a8)
         {
             var v1 = new Var();
             var v2 = new Var();
@@ -417,8 +449,9 @@ namespace Kanrenmo
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7, Relation r8) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation, Relation> function, Relation r1, Relation r2, Relation r3, Relation r4, Relation r5, Relation r6, Relation r7, Relation r8) =>
             new Relation(context => function(r1, r2, r3, r4, r5, r6, r7, r8).Execute(context));
 
 	}

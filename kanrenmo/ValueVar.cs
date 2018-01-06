@@ -1,4 +1,6 @@
-﻿namespace Kanrenmo
+﻿using Kanrenmo.Annotations;
+
+namespace Kanrenmo
 {
     public abstract class ValueVar: Var
     {
@@ -19,6 +21,7 @@
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator ValueVar<T>(T value) => new ValueVar<T>(value);
 
         /// <summary>

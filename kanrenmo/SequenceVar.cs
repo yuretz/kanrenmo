@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -20,10 +21,10 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="head">Sequnce head.</param>
         /// <param name="tail">Sequence tail.</param>
-        internal SequenceVar(Var head, Var tail)
+        internal SequenceVar([CanBeNull] Var head, [CanBeNull] Var tail)
         {
             _head = head;
-            _tail = tail ?? Empty;
+            _tail = Equals(head, null) ? null : (tail ?? Empty);
         }
 
         /// <summary>
@@ -54,6 +55,7 @@ namespace Kanrenmo
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
+        [NotNull]
         public IEnumerator<Var> GetEnumerator() => new SequenceEnumerator(this);
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace Kanrenmo
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
         /// </returns>
+        [NotNull]
         IEnumerator IEnumerable.GetEnumerator() => new SequenceEnumerator(this);
 
 

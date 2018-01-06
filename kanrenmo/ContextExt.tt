@@ -11,6 +11,7 @@
  
 using System;
 using System.Collections.Generic;
+using Kanrenmo.Annotations;
 namespace Kanrenmo
 {
 	public partial class Context
@@ -32,7 +33,8 @@ for(int count = 1; count < 9; count ++)
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of execution results</returns>
-		public static IEnumerable<IReadOnlyList<Var>> Run(Func<<#=funcArgTypes#>, Relation> function)
+        [NotNull, Pure]
+		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<<#=funcArgTypes#>, Relation> function)
 		{
 <# 
 	for(int i = 1; i <= count; i++)
@@ -51,7 +53,8 @@ for(int count = 1; count < 9; count ++)
         /// </summary>
         /// <param name="function">The relation function.</param>
         /// <returns>The new relation with fresh variables</returns>
-		public static Relation Fresh(Func<<#=funcArgTypes#>, Relation> function)
+        [NotNull, Pure]
+		public static Relation Fresh([NotNull]Func<<#=funcArgTypes#>, Relation> function)
 		{
 <# 
 	for(int i = 1; i <= count; i++)
@@ -66,8 +69,9 @@ for(int count = 1; count < 9; count ++)
 
         /// <summary>
         /// Invokes the specified relation function with the specified variable arguments.
-        /// </summary>    
-        public static Relation Invoke(Func<<#=funcArgTypes#>, Relation> function, <#=invokeArgs#>)
+        /// </summary>
+        [NotNull, Pure]    
+        public static Relation Invoke([NotNull]Func<<#=funcArgTypes#>, Relation> function, <#=invokeArgs#>)
         {
 <# 
 	for(int i = 1; i <= count; i++)
@@ -85,8 +89,9 @@ for(int count = 1; count < 9; count ++)
 
         /// <summary>
         /// Invokes the specified relation function with the specified relation arguments.
-        /// </summary> 
-        public static Relation Invoke(Func<<#=relationArgTypes#>, Relation> function, <#=invokeRelationArgs#>) =>
+        /// </summary>
+        [NotNull, Pure] 
+        public static Relation Invoke([NotNull]Func<<#=relationArgTypes#>, Relation> function, <#=invokeRelationArgs#>) =>
             new Relation(context => function(<#=relationArgs#>).Execute(context));
 
 <#

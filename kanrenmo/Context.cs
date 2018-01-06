@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -26,7 +27,8 @@ namespace Kanrenmo
         /// <param name="relation">The relation to run.</param>
         /// <param name="variables">The variables to query.</param>
         /// <returns>Variable bindings enumeration</returns>
-        public static IEnumerable<Binding> Run(Relation relation, params Var[] variables) =>
+        [NotNull, Pure]
+        public static IEnumerable<Binding> Run([NotNull] Relation relation, params Var[] variables) =>
             new Context()
                 // add vars to context
                 .With(variables)
@@ -42,6 +44,7 @@ namespace Kanrenmo
         /// <param name="relation">The scoped relation.</param>
         /// <param name="variables">The scoped variables.</param>
         /// <returns>Resulting relation</returns>
+        [NotNull, Pure]
         public static Relation Fresh(Relation relation, params Var[] variables) =>
             new Relation(parent =>
                     // extend the existing scope with fresh vars
@@ -56,10 +59,12 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The function to invoke.</param>
         /// <returns>Resulting relation</returns>
+        [NotNull, Pure]
         public static Relation Invoke(Func<Relation> function) =>
             new Relation(function);
 
 
+        [NotNull, Pure]
         public static Var Var<T>(T value) => (ValueVar<T>) value;
 
         /// <summary>
@@ -67,13 +72,16 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variables">The variables enumeration.</param>
         /// <returns>new sequence variable instance</returns>
-        public static SequenceVar Seq(IEnumerable<Var> variables) => Seq(variables.GetEnumerator());
+        [NotNull, Pure]
+        public static SequenceVar Seq([CanBeNull] IEnumerable<Var> variables) => 
+            variables == null ? SequenceVar.Empty : Seq(variables.GetEnumerator());
 
         /// <summary>
         /// Converts variables to a <see cref="SequenceVar"/>
         /// </summary>
         /// <param name="variables">The variables.</param>
         /// <returns>new sequence variable instance</returns>
+        [NotNull, Pure]
         public static SequenceVar Seq(params Var[] variables) => Seq(variables.AsEnumerable());
 
         /// <summary>
@@ -82,6 +90,7 @@ namespace Kanrenmo
         /// <param name="left">The unbound variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>Resulting context enumeration</returns>
+        [NotNull, Pure]
         internal IEnumerable<Context> Unify(Var left, Var right)
         {
             // use dynamic binding to dispatch to the proper method
@@ -89,8 +98,9 @@ namespace Kanrenmo
             return result == null ? Enumerable.Empty<Context>() : Enumerable.Repeat(result, 1);
         }
 
-        private static SequenceVar Seq(IEnumerator<Var> variables) =>
-            !variables.MoveNext() ? SequenceVar.Empty : variables.Current.Cons(Seq(variables));
+        [NotNull]
+        private static SequenceVar Seq([CanBeNull] IEnumerator<Var> variables) =>
+            !(variables?.MoveNext() ?? false) ? SequenceVar.Empty : variables.Current.Cons(Seq(variables));
 
         /// <summary>
         /// Unifies two variables returning the new context.
@@ -98,6 +108,7 @@ namespace Kanrenmo
         /// <param name="left">The unbound.</param>
         /// <param name="right">The right.</param>
         /// <returns>The new context or null if unification fails</returns>
+        [CanBeNull]
         private Context UnifySingle(Var left, Var right)
         {
             left = Reify(left);
@@ -132,8 +143,8 @@ namespace Kanrenmo
         /// <param name="scope">The scope variables.</param>
         /// <param name="environment">The environment containing existing variable bindings.</param>
         private Context(
-            ImmutableDictionary<Var, Var> scope = null, 
-            ImmutableDictionary<Var, Var> environment = null)
+            [CanBeNull] ImmutableDictionary<Var, Var> scope = null, 
+            [CanBeNull] ImmutableDictionary<Var, Var> environment = null)
         {
             _scope = scope ?? ImmutableDictionary<Var, Var>.Empty;
             _environment = environment ?? ImmutableDictionary<Var, Var>.Empty;
@@ -144,6 +155,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variables">The variables to add.</param>
         /// <returns>The new context instance</returns>
+        [NotNull]
         private Context With(params Var[] variables) =>
             new Context(
                 _scope.SetItems(variables.Select(v => new KeyValuePair<Var, Var>(v, new Var()))),
@@ -154,7 +166,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="relation">The relation to apply.</param>
         /// <returns>The resulting context enumeration</returns>
-        private IEnumerable<Context> Apply(Relation relation) => relation.Execute(this);
+        [NotNull]
+        private IEnumerable<Context> Apply([NotNull] Relation relation) => relation.Execute(this);
 
         /// <summary>
         /// Unifies two unbound variables.
@@ -162,6 +175,7 @@ namespace Kanrenmo
         /// <param name="unbound">The unbound variable.</param>
         /// <param name="other">The other variable.</param>
         /// <returns>The resulting context</returns>
+        [NotNull]
         private Context UnifyUnbound(Var unbound, Var other) => new Context(_scope, _environment.Add(unbound, other));
 
         /// <summary>
@@ -170,6 +184,7 @@ namespace Kanrenmo
         /// <param name="left">The unbound variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>The resulting context</returns>
+        [CanBeNull]
         private Context UnifyValues(ValueVar left, ValueVar right) => 
             Equals(left, right) ? this : null;
 
@@ -180,7 +195,8 @@ namespace Kanrenmo
         /// <param name="left">The first sequence variable.</param>
         /// <param name="right">The second sequence variable.</param>
         /// <returns>The resulting context</returns>
-        private Context UnifySequences(SequenceVar left, SequenceVar right)
+        [CanBeNull]
+        private Context UnifySequences([NotNull] SequenceVar left, [NotNull] SequenceVar right)
         {
             if (left.IsEmpty || right.IsEmpty)
             {
@@ -188,7 +204,7 @@ namespace Kanrenmo
             }
             
             return UnifySingle(left.Head(), right.Head())
-                    .UnifySingle(left.Tail(), right.Tail());
+                    ?.UnifySingle(left.Tail(), right.Tail());
         }
             
 
@@ -197,6 +213,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variable">The variable to reify.</param>
         /// <returns>Reification</returns>
+        [NotNull]
         private Var Reify(Var variable)
         {
             switch (variable)
@@ -215,6 +232,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variable">The variable to reify.</param>
         /// <returns>Reified variable</returns>
+        [NotNull]
         private Var ReifyImpl(ValueVar variable) => variable;
 
         /// <summary>
@@ -223,6 +241,7 @@ namespace Kanrenmo
         /// <param name="variable">The variable to reify.</param>
         /// <returns>Reified variable</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
+        [NotNull]
         private Var ReifyImpl(Var variable)
         {
             if (!_scope.TryGetValue(variable, out var bound))
@@ -247,7 +266,8 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="sequence">The sequence variable to reify.</param>
         /// <returns>reified sequence</returns>
-        private Var ReifyImpl(SequenceVar sequence) => 
+        [NotNull]
+        private Var ReifyImpl([NotNull] SequenceVar sequence) => 
             sequence.IsEmpty ? SequenceVar.Empty : new SequenceVar(Reify(sequence.Head()), Reify(sequence.Tail()));
 
         /// <summary>
@@ -255,6 +275,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variables">The variables.</param>
         /// <returns>A dictionary of variables with their bindings</returns>
+        [NotNull]
         private Binding QueryAll(IEnumerable<Var> variables) =>
             new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
 

@@ -246,7 +246,7 @@ namespace Kanrenmo.Tests
         public void Test12_17()
         {
             AssertOneBound(
-                CheckList(new object[] {CheckList(new [] {"raisin", "pear"}), 'a'}),
+                CheckList(new object[] {CheckList(new object [] {"raisin", "pear"}), 'a'}),
                 Run(r => 
                     Fresh((x, y) => 
                         Seq("grape", "raisin", "pear").Tailo(x)
@@ -261,7 +261,14 @@ namespace Kanrenmo.Tests
           (== #t q))
 
         (list #t))
+*/
+        [Fact]
+        public void Test12_18()
+        {
+            AssertOneBound(true, Run(q => Seq('a', 'c', 'o', 'r', 'n').Tailo(Seq('c', 'o', 'r', 'n')) & q == true));
+        }
 
+/*
         (test-check "testc12.tex-19" `(c o r n)
 
            (cdr 
@@ -510,7 +517,8 @@ namespace Kanrenmo.Tests
 */
 
 
-        private Predicate<Var> CheckList(object[] values = null, int?[] indices = null) => variable =>
+        [NotNull]
+        private Predicate<Var> CheckList([CanBeNull] object[] values = null, [CanBeNull] int?[] indices = null) => variable =>
         {
             if (!(variable is SequenceVar sequence))
             {
@@ -572,7 +580,7 @@ namespace Kanrenmo.Tests
         };
 
         [AssertionMethod]
-        private void AssertOneBound(object value, IEnumerable<IReadOnlyList<Var>> results)
+        private void AssertOneBound(object value, [NotNull] IEnumerable<IReadOnlyList<Var>> results)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -594,7 +602,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertOneUnbound(IEnumerable<IReadOnlyList<Var>> results)
+        private void AssertOneUnbound([NotNull] IEnumerable<IReadOnlyList<Var>> results)
         {
             var list = results.ToList();
             Assert.Single(list);

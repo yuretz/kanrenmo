@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JetBrains.Annotations;
 using Xunit;
 using static Kanrenmo.Context;
 
@@ -25,7 +26,7 @@ namespace Kanrenmo.Tests
         [Theory]
         [InlineData(1, 2)]
         [InlineData(5, 6, 7)]
-        public void OrReturnsMultipleResults(params int[] values)
+        public void OrReturnsMultipleResults([NotNull] params int[] values)
         {
             
             var relation = values.Aggregate(Relation.Empty, (r, i) => r | _q == i);

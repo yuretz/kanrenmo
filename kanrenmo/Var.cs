@@ -1,4 +1,5 @@
 ﻿using System;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -14,6 +15,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(int value) => new ValueVar<int>(value);
 
         /// <summary>
@@ -23,6 +25,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(bool value) => new ValueVar<bool>(value);
 
         /// <summary>
@@ -32,6 +35,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(double value) => new ValueVar<double>(value);
 
         /// <summary>
@@ -41,6 +45,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(string value) => new ValueVar<string>(value);
 
         /// <summary>
@@ -50,6 +55,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(char value) => new ValueVar<char>(value);
 
         /// <summary>
@@ -59,6 +65,7 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
+        [NotNull]
         public static implicit operator Var(Var[] variables) => Context.Seq(variables); 
 
         /// <summary>
@@ -69,7 +76,8 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the operation.
         /// </returns>
-        public static Relation operator ==(Var left, Var right) => new Relation(context => context.Unify(left, right));
+        [NotNull]
+        public static Relation operator ==([NotNull] Var left, [NotNull] Var right) => new Relation(context => context.Unify(left, right));
 
         /// <summary>
         /// Disequality constraint != between two variables
@@ -79,7 +87,8 @@ namespace Kanrenmo
         /// <returns>
         /// The result of the operation.
         /// </returns>
-        public static Relation operator !=(Var left, Var right) => new Relation(context => throw new NotImplementedException());
+        [NotNull]
+        public static Relation operator !=([NotNull] Var left, [NotNull] Var right) => new Relation(context => throw new NotImplementedException());
 
         /// <summary>
         /// The unique variable identifier
@@ -116,6 +125,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="tail">The tail variable.</param>
         /// <returns>The constructed sequence</returns>
+        [NotNull]
         public SequenceVar Cons(Var tail) => new SequenceVar(this, tail);
 
         /// <summary>

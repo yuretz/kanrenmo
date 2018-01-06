@@ -766,16 +766,18 @@ namespace Kanrenmo.Tests
                 _q);
         }
 
-        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run1(Relation relation, params Var[] variables) => 
+        [NotNull]
+        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run1([NotNull] Relation relation, params Var[] variables) => 
             Run(relation, variables).Take(1);
 
-        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run2(Relation relation, params Var[] variables) => 
+        [NotNull]
+        private IEnumerable<IReadOnlyDictionary<Var, Var>> Run2([NotNull] Relation relation, params Var[] variables) => 
             Run(relation, variables).Take(2);
 
         //private Func<T, TRet> Lambda<T, TRet>(Func<T, TRet> lambda) => lambda;
 
         [AssertionMethod]
-        private void AssertSingle(Predicate<Var> check, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertSingle([NotNull] Predicate<Var> check, [NotNull] IEnumerable<IReadOnlyDictionary<Var, Var>> results, [NotNull] Var v)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -785,7 +787,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertOneBound<T>(T value, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertOneBound<T>(T value, [NotNull] IEnumerable<IReadOnlyDictionary<Var, Var>> results, [NotNull] Var v)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -796,7 +798,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertOneUnbound(IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertOneUnbound([NotNull] IEnumerable<IReadOnlyDictionary<Var, Var>> results, [NotNull] Var v)
         {
             var list = results.ToList();
             Assert.Single(list);
@@ -806,7 +808,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertAll(object[] values, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
+        private void AssertAll([NotNull] object[] values, [NotNull] IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v)
         {
             var list = results.ToList();
             Assert.Equal(values.Length, list.Count);
@@ -832,7 +834,7 @@ namespace Kanrenmo.Tests
         }
 
         [AssertionMethod]
-        private void AssertExists(object[] values, IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v, int count = 1)
+        private void AssertExists([NotNull] object[] values, [NotNull] IEnumerable<IReadOnlyDictionary<Var, Var>> results, Var v, int count = 1)
         {
             var list = results.ToList();            
             Assert.All(list, d => Assert.Single(d));
@@ -857,6 +859,7 @@ namespace Kanrenmo.Tests
             Assert.Equal(count, total);
         }
 
+        [NotNull]
         private Predicate<Var> CheckList(object[] values, int?[] indices) => variable =>
         {
             if (!(variable is SequenceVar sequence))
