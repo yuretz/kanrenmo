@@ -5,13 +5,16 @@ namespace Kanrenmo
 {
     public static class VarExt
     {
-        [NotNull]
+        [NotNull, Pure]
+        public static Relation HasNothing(this Var sequence) => sequence == SequenceVar.Empty;
+
+        [NotNull, Pure]
         public static Relation HasHead(this Var sequence, Var head) => Declare(tail => head.Combine(tail) == sequence);
 
-        [NotNull]
+        [NotNull, Pure]
         public static Relation HasTail(this Var sequence, Var tail) => Declare(head => head.Combine(tail) == sequence);
 
-        [NotNull]
-        public static Relation Consists(this Var sequence, Var head, Var tail) => Invoke((s, h, t) => h.Combine(t) == s, sequence, head, tail);
+        [NotNull, Pure]
+        public static Relation Consists(this Var sequence, [NotNull] Var head, [NotNull] Var tail) => head.Combine(tail) == sequence;
     }
 }

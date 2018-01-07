@@ -55,11 +55,7 @@ namespace Kanrenmo
         /// <returns>
         ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
-        {
-            var other = obj as ValueVar<T>;
-            return !Equals(other, null) && Equals(other.Value, Value);
-        }
+        public override bool Equals(object obj) => obj is ValueVar<T> other && Equals(other.Value, Value);
 
         /// <summary>
         /// Returns a hash code for this instance.

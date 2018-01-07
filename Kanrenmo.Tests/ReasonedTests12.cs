@@ -369,7 +369,13 @@ namespace Kanrenmo.Tests
 /*
         (test-check "testc12.tex-25" (cons 'd '(a b c))
         `(d a b c))
-
+*/
+        [Fact]
+        public void Test12_25()
+        {
+            Assert.Equal(Seq('d', 'a', 'b', 'c'), Var('d').Combine(Seq('a', 'b', 'c')));
+        }
+/*
         (test-check "testc12.tex-26" 
         (run* (r)
           (fresh (x y z)
@@ -377,19 +383,34 @@ namespace Kanrenmo.Tests
             (conso y `(a ,z c) r)))
 
         (list `(e a d c)))
+*/
+        [Fact]
+        public void Test12_26()
+        {
+            AssertOneBound(
+                CheckList(new object[] {'e', 'a', 'd', 'c'}), 
+                Solve(r => 
+                    Declare((x, y, z) =>
+                        r == Seq('e', 'a', 'd', x) 
+                        & r.Consists(y, Seq('a', z, 'c')))));
+        }
+
+/*
 
         (test-check "testc12.tex-27" 
         (run* (x)
           (conso x `(a ,x c) `(d a ,x c)))
 
         (list 'd))
+*/
+        [Fact]
+        public void Test12_27()
+        {
+            AssertOneBound('d', Solve(x => Seq('d', 'a', x, 'c').Consists(x, Seq('a', x, 'c'))));
+        }
 
-                 (define x 'd)
 
-
-        (test-check "testc12.tex-28" (cons x `(a ,x c))
-        `(d a ,x c))
-
+/*
         (test-check "testc12.tex-29" 
         (run* (l)
           (fresh (x)
@@ -397,7 +418,19 @@ namespace Kanrenmo.Tests
             (conso x `(a ,x c) l)))
 
         (list `(d a d c)))
+*/
+        [Fact]
+        public void Test12_29()
+        {
+            AssertOneBound(
+                CheckList(new object[] {'d', 'a', 'd', 'c'}),
+                Solve(l => 
+                    Declare(x =>
+                        l == Seq('d', 'a', x, 'c')
+                        & l.Consists(x, Seq('a', x, 'c')))));
+        }
 
+/*
         (test-check "testc12.tex-30" 
         (run* (l)
           (fresh (x)
@@ -405,7 +438,19 @@ namespace Kanrenmo.Tests
             (== `(d a ,x c) l)))
 
         (list `(d a d c)))
+*/
+        [Fact]
+        public void Test12_30()
+        {
+            AssertOneBound(
+                CheckList(new object[] {'d', 'a', 'd', 'c'}),
+                Solve(l =>
+                    Declare(x =>
+                        l.Consists(x, Seq('a', x, 'c'))
+                        & l == Seq('d', 'a', x, 'c'))));
+        }
 
+/*
 
         (test-check "testc12.tex-31" 
         (run* (l)
@@ -419,17 +464,48 @@ namespace Kanrenmo.Tests
             (== 'e y)))
 
         (list `(b e a n s)))
+*/
+        [Fact]
+        public void Test12_31()
+        {
+            AssertOneBound(
+                CheckList(new object[] {'b', 'e', 'a', 'n', 's'}),
+                Solve(l =>
+                    Declare((d, x, y, w, s) =>
+                        s.Consists(w, Seq('a', 'n', 's'))
+                        & l.HasTail(s)
+                        & l.HasHead(x)
+                        & x == 'b'
+                        & l.HasTail(d)
+                        & d.HasHead(y)
+                        & y == 'e')));
+        }
 
+/*
         (test-check "testc12.tex-32"   
         (null? `(grape raisin pear))
 
         #f)
+*/
+        [Fact]
+        public void Test12_32()
+        {
+            Assert.False(Seq("grape", "raisin", "pear").IsEmpty);
+        }
 
+/*
         (test-check "testc12.tex-33"   
         (null? '())
 
         #t)
-
+*/
+        [Fact]
+        public void Test12_33()
+        {
+            Assert.True(SequenceVar.Empty.IsEmpty);
+            Assert.True(Seq().IsEmpty);
+        }
+/*
 
         (define nullo
           (lambda (x)
@@ -442,6 +518,14 @@ namespace Kanrenmo.Tests
           (== #t q))
 
         `())
+*/
+        [Fact]
+        public void Test12_34()
+        {
+            Assert.Empty(Solve(q => Seq("grape", "raisin", "pear").HasNothing() & q == true));
+        }
+
+/*
 
         (test-check "testc12.tex-35" 
         (run* (q)
@@ -449,45 +533,90 @@ namespace Kanrenmo.Tests
           (== #t q))
 
         `(#t))
+*/
+        [Fact]
+        public void Test12_35()
+        {
+            AssertOneBound(true, Solve(q => SequenceVar.Empty.HasNothing() & q == true));
+            AssertOneBound(true, Solve(q => Seq().HasNothing() & q == true));
+        }
 
+/*
         (test-check "testc12.tex-36"   
         (run* (x) 
           (nullo x))
 
         `(()))
+*/
+        [Fact]
+        public void Test12_36()
+        {
+            AssertOneBound((Predicate<Var>)(v => (v is SequenceVar s) && s.IsEmpty), Solve(x => x.HasNothing()));
+        }
 
-
+/*
         (test-check "testc12.tex-37" 
         (eq? 'pear 'plum)
 
         #f)
+*/
+        [Fact]
+        public void Test12_37()
+        {
+            Assert.NotEqual(Var("pear"), Var("plum"));
+        }
 
+/*
         (test-check "testc12.tex-38"   
         (eq? 'plum 'plum)
 
         #t)
+*/
+        [Fact]
+        public void Test12_38()
+        {
+            Assert.Equal(Var("plum"), Var("plum"));
+        }
 
 
+
+
+/*
         (define eqo
           (lambda (x y)
             (== x y)))
+*/
+        public Relation AreEqual(Var x, Var y) => x == y;
 
-
+/*
         (test-check "testc12.tex-39" 
         (run* (q)
           (eqo 'pear 'plum)
           (== #t q))
 
         `())
+*/
+        [Fact]
+        public void Test12_39()
+        {
+            Assert.Empty(Solve(q => AreEqual("pear", "plum") & q == true));
+        }
 
+/*
         (test-check "testc12.tex-40" 
         (run* (q)
           (eqo 'plum 'plum)
           (== #t q))
 
         `(#t))
+*/
+        [Fact]
+        public void Test12_40()
+        {
+            AssertOneBound(true, Solve(q => AreEqual("plum", "plum") & q == true));
+        }
 
-
+/*
         (test-check "testc12.tex-41"   
         (pair? `((split) . pea))
 

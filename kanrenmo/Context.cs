@@ -111,8 +111,14 @@ namespace Kanrenmo
         [CanBeNull]
         private Context UnifySingle(Var left, Var right)
         {
+
             left = Reify(left);
             right = Reify(right);
+
+            if (Equals(left, right))
+            {
+                return this;
+            }
 
             if (!left.Bound)
             {
