@@ -502,7 +502,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_33()
         {
-            Assert.True(SequenceVar.Empty.IsEmpty);
+            Assert.True(PairVar.Empty.IsEmpty);
             Assert.True(Seq().IsEmpty);
         }
 /*
@@ -537,7 +537,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_35()
         {
-            AssertOneBound(true, Solve(q => SequenceVar.Empty.HasNothing() & q == true));
+            AssertOneBound(true, Solve(q => PairVar.Empty.HasNothing() & q == true));
             AssertOneBound(true, Solve(q => Seq().HasNothing() & q == true));
         }
 
@@ -551,7 +551,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_36()
         {
-            AssertOneBound((Predicate<Var>)(v => (v is SequenceVar s) && s.IsEmpty), Solve(x => x.HasNothing()));
+            AssertOneBound((Predicate<Var>)(v => (v is PairVar s) && s.IsEmpty), Solve(x => x.HasNothing()));
         }
 
 /*
@@ -696,7 +696,7 @@ namespace Kanrenmo.Tests
         [NotNull]
         private Predicate<Var> CheckList([CanBeNull] object[] values = null, [CanBeNull] int?[] indices = null) => variable =>
         {
-            if (!(variable is SequenceVar sequence))
+            if (!(variable is PairVar sequence))
             {
                 return false;
             }

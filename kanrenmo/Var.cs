@@ -126,18 +126,18 @@ namespace Kanrenmo
         /// <param name="tail">The tail variable.</param>
         /// <returns>The constructed sequence</returns>
         [NotNull]
-        public SequenceVar Combine(Var tail) => new SequenceVar(this, tail);
+        public PairVar Combine(Var tail) => new PairVar(this, tail);
 
         /// <summary>
         /// Gets the head element of the sequence.
         /// </summary>
-        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="SequenceVar"/></exception>
+        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="PairVar"/></exception>
         public virtual Var Head() => throw new InvalidOperationException($"Variable {Id} is not a sequence");
 
         /// <summary>
         /// Gets the tail subsequence of the sequence.
         /// </summary>
-        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="SequenceVar"/></exception>
+        /// <exception cref="InvalidOperationException">when this variable is not a <see cref="PairVar"/></exception>
         public virtual Var Tail() => throw new InvalidOperationException($"Variable {Id} is not a sequence");
 
         private static int _id;

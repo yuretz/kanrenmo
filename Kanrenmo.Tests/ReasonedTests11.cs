@@ -863,7 +863,7 @@ namespace Kanrenmo.Tests
         [NotNull]
         private Predicate<Var> CheckList(object[] values, int?[] indices) => variable =>
         {
-            if (!(variable is SequenceVar sequence))
+            if (!(variable is PairVar sequence))
             {
                 return false;
             }

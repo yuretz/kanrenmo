@@ -68,21 +68,21 @@ namespace Kanrenmo
         public static Var Var<T>(T value) => (ValueVar<T>) value;
 
         /// <summary>
-        /// Converts variable enumeration to a <see cref="SequenceVar"/>
+        /// Converts variable enumeration to a sequence of nested <see cref="PairVar"/>
         /// </summary>
         /// <param name="variables">The variables enumeration.</param>
-        /// <returns>new sequence variable instance</returns>
+        /// <returns>new sequence of nested pair variable instances</returns>
         [NotNull, Pure]
-        public static SequenceVar Seq([CanBeNull] IEnumerable<Var> variables) => 
-            variables == null ? SequenceVar.Empty : Seq(variables.GetEnumerator());
+        public static PairVar Seq([CanBeNull] IEnumerable<Var> variables) => 
+            variables == null ? PairVar.Empty : Seq(variables.GetEnumerator());
 
         /// <summary>
-        /// Converts variables to a <see cref="SequenceVar"/>
+        /// Converts variables to a to a sequence of nested <see cref="PairVar"/>
         /// </summary>
         /// <param name="variables">The variables.</param>
-        /// <returns>new sequence variable instance</returns>
+        /// <returns>new sequence of nested pair variable instances</returns>
         [NotNull, Pure]
-        public static SequenceVar Seq(params Var[] variables) => Seq(variables.AsEnumerable());
+        public static PairVar Seq(params Var[] variables) => Seq(variables.AsEnumerable());
 
         /// <summary>
         /// Unifies two variables.
@@ -99,8 +99,8 @@ namespace Kanrenmo
         }
 
         [NotNull]
-        private static SequenceVar Seq([CanBeNull] IEnumerator<Var> variables) =>
-            !(variables?.MoveNext() ?? false) ? SequenceVar.Empty : variables.Current.Combine(Seq(variables));
+        private static PairVar Seq([CanBeNull] IEnumerator<Var> variables) =>
+            !(variables?.MoveNext() ?? false) ? PairVar.Empty : variables.Current.Combine(Seq(variables));
 
         /// <summary>
         /// Unifies two variables returning the new context.
@@ -135,7 +135,7 @@ namespace Kanrenmo
                 return UnifyValues(leftVal, rightVal);
             }
                 
-            if (left is SequenceVar leftSeq && right is SequenceVar rightSeq)
+            if (left is PairVar leftSeq && right is PairVar rightSeq)
             {
                 return UnifySequences(leftSeq, rightSeq);
             }
@@ -196,13 +196,13 @@ namespace Kanrenmo
 
 
         /// <summary>
-        /// Unifies two sequence variables.
+        /// Unifies two pair variables.
         /// </summary>
-        /// <param name="left">The first sequence variable.</param>
-        /// <param name="right">The second sequence variable.</param>
+        /// <param name="left">The first pair variable.</param>
+        /// <param name="right">The second pair variable.</param>
         /// <returns>The resulting context</returns>
         [CanBeNull]
-        private Context UnifySequences([NotNull] SequenceVar left, [NotNull] SequenceVar right)
+        private Context UnifySequences([NotNull] PairVar left, [NotNull] PairVar right)
         {
             if (left.IsEmpty || right.IsEmpty)
             {
@@ -226,7 +226,7 @@ namespace Kanrenmo
             {
                 case ValueVar value:
                     return ReifyImpl(value);
-                case SequenceVar sequence:
+                case PairVar sequence:
                     return ReifyImpl(sequence);
                 default:
                     return ReifyImpl(variable);
@@ -259,13 +259,13 @@ namespace Kanrenmo
         }
 
         /// <summary>
-        /// Reifies the sequence variable.
+        /// Reifies the pair variable.
         /// </summary>
-        /// <param name="sequence">The sequence variable to reify.</param>
-        /// <returns>reified sequence</returns>
+        /// <param name="pair">The pair variable to reify.</param>
+        /// <returns>reified pair</returns>
         [NotNull]
-        private Var ReifyImpl([NotNull] SequenceVar sequence) => 
-            sequence.IsEmpty ? SequenceVar.Empty : new SequenceVar(Reify(sequence.Head()), Reify(sequence.Tail()));
+        private Var ReifyImpl([NotNull] PairVar pair) => 
+            pair.IsEmpty ? PairVar.Empty : new PairVar(Reify(pair.Head()), Reify(pair.Tail()));
 
         /// <summary>
         /// Queries all the provided variables.

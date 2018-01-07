@@ -6,7 +6,7 @@ namespace Kanrenmo
     public static class VarExt
     {
         [NotNull, Pure]
-        public static Relation HasNothing(this Var sequence) => sequence == SequenceVar.Empty;
+        public static Relation HasNothing(this Var sequence) => sequence == PairVar.Empty;
 
         [NotNull, Pure]
         public static Relation HasHead(this Var sequence, Var head) => Declare(tail => head.Combine(tail) == sequence);

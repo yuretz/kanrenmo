@@ -9,19 +9,19 @@ namespace Kanrenmo
     /// Sequence variable
     /// </summary>
     /// <seealso cref="Var" />
-    public class SequenceVar : Var, IEnumerable<Var>
+    public class PairVar : Var, IEnumerable<Var>
     {
         /// <summary>
         /// The empty sequence
         /// </summary>
-        public static readonly SequenceVar Empty = new SequenceVar(null, null);
+        public static readonly PairVar Empty = new PairVar(null, null);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SequenceVar" /> class.
+        /// Initializes a new instance of the <see cref="PairVar" /> class.
         /// </summary>
         /// <param name="head">Sequnce head.</param>
         /// <param name="tail">Sequence tail.</param>
-        internal SequenceVar([CanBeNull] Var head, [CanBeNull] Var tail)
+        internal PairVar([CanBeNull] Var head, [CanBeNull] Var tail)
         {
             _head = head;
             _tail = Equals(head, null) ? null : (tail ?? Empty);
@@ -75,7 +75,7 @@ namespace Kanrenmo
         /// <returns>
         ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => (obj is SequenceVar other) && this.SequenceEqual(other);
+        public override bool Equals(object obj) => (obj is PairVar other) && this.SequenceEqual(other);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -89,7 +89,7 @@ namespace Kanrenmo
 
         private struct SequenceEnumerator : IEnumerator<Var>
         {
-            public SequenceEnumerator(SequenceVar start)
+            public SequenceEnumerator(PairVar start)
             {
                 _start = start;
                 _started = false;
@@ -110,9 +110,9 @@ namespace Kanrenmo
                 switch (_variable)
                 {
                     case null:
-                    case SequenceVar sequence when Equals(sequence._head, null):
+                    case PairVar sequence when Equals(sequence._head, null):
                         return false;
-                    case SequenceVar sequence:
+                    case PairVar sequence:
                         Current = sequence._head;
                         _variable = sequence._tail;
                         return true;
@@ -139,7 +139,7 @@ namespace Kanrenmo
             
             }
 
-            private readonly SequenceVar _start;
+            private readonly PairVar _start;
             private bool _started;
             private Var _variable;
         }
