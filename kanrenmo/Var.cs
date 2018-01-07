@@ -126,7 +126,7 @@ namespace Kanrenmo
         /// <param name="tail">The tail variable.</param>
         /// <returns>The constructed sequence</returns>
         [NotNull]
-        public SequenceVar Cons(Var tail) => new SequenceVar(this, tail);
+        public SequenceVar Combine(Var tail) => new SequenceVar(this, tail);
 
         /// <summary>
         /// Gets the head element of the sequence.

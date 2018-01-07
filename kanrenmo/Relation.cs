@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -20,7 +21,8 @@ namespace Kanrenmo
         /// <param name="left">left relation</param>
         /// <param name="right">right relation</param>
         /// <returns>operation result</returns>
-        public static Relation operator |(Relation left, Relation right) =>
+        [NotNull]
+        public static Relation operator |([NotNull] Relation left, [NotNull] Relation right) =>
             new Relation(context => Union(context, left, right));
         /// <summary>
         /// Conjunction operator between two relations
@@ -28,20 +30,21 @@ namespace Kanrenmo
         /// <param name="left">left relation</param>
         /// <param name="right">right relation</param>
         /// <returns>operation result</returns>
-        public static Relation operator &(Relation left, Relation right) =>
+        [NotNull]
+        public static Relation operator &([NotNull] Relation left, [NotNull] Relation right) =>
             new Relation(context => Product(context, left, right));
 
         /// <summary>
         /// Constructs and initializes the class instance
         /// </summary>
         /// <param name="execute">relation function to wrap</param>
-        public Relation(Func<Context, IEnumerable<Context>> execute) => Execute = execute;
+        public Relation([NotNull] Func<Context, IEnumerable<Context>> execute) => Execute = execute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Relation"/> class.
         /// </summary>
         /// <param name="relation">The lazy relation constructor function.</param>
-        public Relation(Func<Relation> relation) : this(context => relation().Execute(context))
+        public Relation([NotNull] Func<Relation> relation) : this(context => relation().Execute(context))
         {
         }
 
@@ -50,7 +53,7 @@ namespace Kanrenmo
         /// </summary>
         public readonly Func<Context, IEnumerable<Context>> Execute;
 
-        private static IEnumerable<Context> Union(Context context, Relation left, Relation right)
+        private static IEnumerable<Context> Union([NotNull] Context context, [NotNull] Relation left, [NotNull] Relation right)
         {
             IEnumerator<Context> leftEnum = null;
             IEnumerator<Context> rightEnum = null;
@@ -72,7 +75,7 @@ namespace Kanrenmo
             }
         }
 
-        private static IEnumerable<Context> Product(Context context, Relation left, Relation right) => 
+        private static IEnumerable<Context> Product([NotNull] Context context, [NotNull] Relation left, [NotNull] Relation right) => 
             left.Execute(context).SelectMany(c => right.Execute(c));
     }
 }

@@ -29,12 +29,12 @@ for(int count = 1; count < 9; count ++)
 
 #>
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<<#=funcArgTypes#>, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<<#=funcArgTypes#>, Relation> function)
 		{
 <# 
 	for(int i = 1; i <= count; i++)
@@ -44,17 +44,17 @@ for(int count = 1; count < 9; count ++)
 <#
     }    
 #>
-            return Run(function(<#=runArgs#>), <#=runArgs#>);
+            return Solve(function(<#=runArgs#>), <#=runArgs#>);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<<#=funcArgTypes#>, Relation> function)
+		public static Relation Declare([NotNull]Func<<#=funcArgTypes#>, Relation> function)
 		{
 <# 
 	for(int i = 1; i <= count; i++)
@@ -64,7 +64,7 @@ for(int count = 1; count < 9; count ++)
 <#
     }
 #>
-            return Fresh(function(<#=runArgs#>), <#=runArgs#>);
+            return Declare(function(<#=runArgs#>), <#=runArgs#>);
 		}
 
         /// <summary>
@@ -83,7 +83,7 @@ for(int count = 1; count < 9; count ++)
 #>
             return new Relation(
                 context => 
-                    Fresh(<#=invokeBindings#> & function(<#=runArgs#>),
+                    Declare(<#=invokeBindings#> & function(<#=runArgs#>),
                         <#=runArgs#>).Execute(context));
         }
 

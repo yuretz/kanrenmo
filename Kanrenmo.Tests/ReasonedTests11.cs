@@ -26,7 +26,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_1()
         {
-            Assert.Empty(Run(Fail, _q));
+            Assert.Empty(Solve(Fail, _q));
         }
 
 /*
@@ -39,7 +39,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_2()
         {
-            AssertOneBound(true, Run(_q == true, _q), _q);
+            AssertOneBound(true, Solve(_q == true, _q), _q);
         }
 
 /*
@@ -64,7 +64,7 @@ namespace Kanrenmo.Tests
         [InlineData(42)]
         public void Test11_3_8<T>(T value)
         {
-            Assert.Empty(Run(Fail & _q == (ValueVar<T>)value, _q));
+            Assert.Empty(Solve(Fail & _q == (ValueVar<T>)value, _q));
         }
 
 /*
@@ -97,7 +97,7 @@ namespace Kanrenmo.Tests
         [InlineData(42)]
         public void Test11_5_7_9<T>(T value)
         {
-            AssertOneBound(value, Run(Succeed & _q == (ValueVar<T>)value, _q), _q);
+            AssertOneBound(value, Solve(Succeed & _q == (ValueVar<T>)value, _q), _q);
         }
 
 /*
@@ -112,7 +112,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_11()
         {
-            AssertOneBound(true, Run(Fresh(true == _x & true == _q, _x), _q), _q);
+            AssertOneBound(true, Solve(Declare(true == _x & true == _q, _x), _q), _q);
         }
 
 /*
@@ -127,7 +127,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_12()
         {
-            AssertOneBound(true, Run(Fresh(_x == true & true == _q, _x), _q), _q);
+            AssertOneBound(true, Solve(Declare(_x == true & true == _q, _x), _q), _q);
         }
 
 /*
@@ -143,7 +143,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_13()
         {
-            AssertOneBound(true, Run(Fresh(_x == true & _q == true, _x), _q), _q);
+            AssertOneBound(true, Solve(Declare(_x == true & _q == true, _x), _q), _q);
         }
 
 /*
@@ -157,7 +157,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_14()
         {
-            AssertOneUnbound(Run(Succeed, _x), _x);
+            AssertOneUnbound(Solve(Succeed, _x), _x);
         }
 
 /*
@@ -172,7 +172,7 @@ namespace Kanrenmo.Tests
         [Fact()]
         public void Test11_15()
         {
-            AssertOneUnbound(Run(Invoke(x => Fresh(true == x, x), false), _x), _x);
+            AssertOneUnbound(Solve(Invoke(x => Declare(true == x, x), false), _x), _x);
         }
 
 /*
@@ -188,7 +188,7 @@ namespace Kanrenmo.Tests
         {
             AssertSingle(
                 CheckList(null, new int?[] {0, 1}), 
-                Run(Fresh(_r == new[] {_x, _y}, _x, _y), _r),
+                Solve(Declare(_r == new[] {_x, _y}, _x, _y), _r),
                 _r);
         }
 
@@ -206,7 +206,7 @@ namespace Kanrenmo.Tests
         {
             AssertSingle(
                 CheckList(null, new int?[] { 0, 1 }),
-                Run(Fresh(_s == new[] { _t, _u }, _t, _u), _s),
+                Solve(Declare(_s == new[] { _t, _u }, _t, _u), _s),
                 _s);
         }
 
@@ -226,7 +226,7 @@ namespace Kanrenmo.Tests
         {
             AssertSingle(
                 CheckList(null, new int? [] {0, 1, 0}),
-                Run(Fresh(Invoke(y => Fresh(_r == new [] {y, _x, y}, _x), _x), _x), _r),
+                Solve(Declare(Invoke(y => Declare(_r == new [] {y, _x, y}, _x), _x), _x), _r),
                 _r);
         }
 
@@ -245,7 +245,7 @@ namespace Kanrenmo.Tests
         {
             AssertSingle(
                 CheckList(null, new int?[] { 0, 1, 0 }),
-                Run(Fresh(Invoke(y => Fresh(_r == new[] { _x, y, _x }, _x), _x), _x), _r),
+                Solve(Declare(Invoke(y => Declare(_r == new[] { _x, y, _x }, _x), _x), _x), _r),
                 _r);
         }
 
@@ -261,7 +261,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_20()
         {
-            Assert.Empty(Run(_q == true & _q == false, _q)); 
+            Assert.Empty(Solve(_q == true & _q == false, _q)); 
         }
 
 /*
@@ -275,7 +275,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_21()
         {
-            AssertOneBound(false, Run(_q == false & _q == false, _q), _q);
+            AssertOneBound(false, Solve(_q == false & _q == false, _q), _q);
         }
 
 /*
@@ -289,7 +289,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_22()
         {
-            AssertOneBound(true, Run(Invoke(x => x == true, _q), _q), _q);
+            AssertOneBound(true, Solve(Invoke(x => x == true, _q), _q), _q);
         }
 
 /*
@@ -303,7 +303,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_23()
         {
-            AssertOneUnbound(Run(Fresh(_x == _r, _x), _r), _r);
+            AssertOneUnbound(Solve(Declare(_x == _r, _x), _r), _r);
         }
 
 /*        
@@ -318,7 +318,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_24()
         {
-            AssertOneBound(true, Run(Fresh(true == _x & _x == _q, _x), _q), _q);
+            AssertOneBound(true, Solve(Declare(true == _x & _x == _q, _x), _q), _q);
         }
 
 /*
@@ -333,7 +333,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_25()
         {
-            AssertOneBound(true, Run(Fresh(_x == _q & true == _x, _x), _q), _q);
+            AssertOneBound(true, Solve(Declare(_x == _q & true == _x, _x), _q), _q);
         }
 
 /*
@@ -348,7 +348,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_26()
         {
-            AssertOneBound(false, Run(Fresh(_q.Equals(_x) == _q, _x), _q), _q);
+            AssertOneBound(false, Solve(Declare(_q.Equals(_x) == _q, _x), _q), _q);
         }
         
 /*
@@ -366,7 +366,7 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 false,
-                Run(Invoke(x => Fresh(x == Equals(x, _q), _q), _q),
+                Solve(Invoke(x => Declare(x == Equals(x, _q), _q), _q),
                     _q),
                 _q);
         }
@@ -385,7 +385,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test13Fail1()
         {
-            Assert.Empty(Run(Fail &Succeed | Succeed & Fail, _q));
+            Assert.Empty(Solve(Fail &Succeed | Succeed & Fail, _q));
         }
 
 /*
@@ -402,7 +402,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test13Succeed1()
         {
-            AssertOneUnbound(Run(Fail & Fail | Succeed & Succeed, _q), _q);
+            AssertOneUnbound(Solve(Fail & Fail | Succeed & Succeed, _q), _q);
         }
 
 /*
@@ -419,7 +419,7 @@ namespace Kanrenmo.Tests
         [Fact]
         void Test13Succeed2()
         {
-            AssertOneUnbound(Run(Succeed & Succeed | Succeed & Fail, _q), _q);
+            AssertOneUnbound(Solve(Succeed & Succeed | Succeed & Fail, _q), _q);
         }
 
 /*
@@ -436,7 +436,7 @@ namespace Kanrenmo.Tests
         {
             AssertAll(
                 new object[] {"olive", "oil"}, 
-                Run(_x == "olive" & Succeed | _x == "oil" & Succeed, _x),
+                Solve(_x == "olive" & Succeed | _x == "oil" & Succeed, _x),
                 _x);
         }
 
@@ -475,7 +475,7 @@ namespace Kanrenmo.Tests
         {
             AssertAll(
                 new object [] {"olive", null, "oil"},
-                Run(
+                Solve(
                     _x == "virgin" & Fail 
                     | _x == "olive" & Succeed 
                     | Succeed & Succeed
@@ -501,7 +501,7 @@ namespace Kanrenmo.Tests
         {
             AssertAll(
                 new object [] {"olive", null, "oil"},
-                Run(_x == "olive" & Succeed 
+                Solve(_x == "olive" & Succeed 
                     | Succeed & Succeed
                     | _x == "oil" & Succeed,
                     _x), 
@@ -547,7 +547,7 @@ namespace Kanrenmo.Tests
         {
             AssertSingle(
                 CheckList(new object[] {"split", "pea"}, null),
-                Run(Fresh(_x == "split" & _y == "pea" & _r == new[] {_x, _y}, _x, _y), _r),
+                Solve(Declare(_x == "split" & _y == "pea" & _r == new[] {_x, _y}, _x, _y), _r),
                 _r);
         }
 
@@ -568,8 +568,8 @@ namespace Kanrenmo.Tests
             AssertAll(
                 new object[] { CheckList(new object[] {"split", "pea"}, null),
                     CheckList(new object[] { "navy", "bean" }, null) },
-                Run(
-                    Fresh(
+                Solve(
+                    Declare(
                         (_x == "split" & _y == "pea" | _x == "navy" & _y == "bean") 
                             & _r == new [] {_x, _y}, 
                         _x, _y),
@@ -594,8 +594,8 @@ namespace Kanrenmo.Tests
             AssertAll(
                 new object[] { CheckList(new object[] {"split", "pea", "soup"}, null),
                     CheckList(new object[] {"navy", "bean", "soup"}, null) },
-                Run(
-                    Fresh(
+                Solve(
+                    Declare(
                         (_x == "split" & _y == "pea" | _x == "navy" & _y == "bean") 
                             & _r == new [] {_x, _y, "soup"}, 
                         _x, _y),
@@ -610,6 +610,7 @@ namespace Kanrenmo.Tests
                 ((== 'tea x) succeed)
                 ((== 'cup x) succeed))))
 */
+        [NotNull]
         public Relation TeaCupo(Var x) => x == "tea" & Succeed | x == "cup" & Succeed;
 
 /*
@@ -623,7 +624,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_37()
         {
-            AssertAll(new object[] {"tea", "cup"}, Run(Invoke(TeaCupo, _x), _x), _x);
+            AssertAll(new object[] {"tea", "cup"}, Solve(Invoke(TeaCupo, _x), _x), _x);
         }
 
  /*
@@ -647,8 +648,8 @@ namespace Kanrenmo.Tests
                     CheckList(new object[] {"tea", true}, null),
                     CheckList(new object[] {"cup", true}, null)
                 }, 
-                Run(
-                    Fresh(
+                Solve(
+                    Declare(
                         (Invoke(TeaCupo, _x) & _y == true & Succeed | _x == false & _y == true)
                             & _r == new [] {_x, _y}, 
                         _x, 
@@ -677,9 +678,9 @@ namespace Kanrenmo.Tests
                     CheckList(null, new int?[] {0, 1}),
                     CheckList(null, new int?[] {0, 1})
                 },
-                Run(
-                    Fresh(
-                        (_y == _x & Fresh(_z == _x, _x) | Fresh(_y == _x, _x) & _z == _x)
+                Solve(
+                    Declare(
+                        (_y == _x & Declare(_z == _x, _x) | Declare(_y == _x, _x) & _z == _x)
                             & new[] {_y, _z} == _r,
                         _x, 
                         _y, 
@@ -709,9 +710,9 @@ namespace Kanrenmo.Tests
                     CheckList(new object[] {false, null}, new int?[] {null, 1}),
                     CheckList(new object[] {null, false}, new int?[] {0, null})
                 },
-                Run(
-                    Fresh(
-                        (_y == _x & Fresh(_z == _x, _x) | Fresh(_y == _x, _x) & _z == _x)
+                Solve(
+                    Declare(
+                        (_y == _x & Declare(_z == _x, _x) | Declare(_y == _x, _x) & _z == _x)
                         & _x == false
                         & new[] { _y, _z } == _r,
                         _x,
@@ -733,7 +734,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test11_41()
         {
-            AssertOneBound(false, Run(Invoke((a, b) => b, _q == true, _q == false), _q), _q);
+            AssertOneBound(false, Solve(Invoke((a, b) => b, _q == true, _q == false), _q), _q);
         }
 
 /*
@@ -756,11 +757,11 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 false, 
-                Run(
+                Solve(
                     Invoke(
                         (a, b, c) => b, 
                         _q == true, 
-                        Fresh(_x == _q & _x == false, _x), 
+                        Declare(_x == _q & _x == false, _x), 
                         _q == true & Succeed | Succeed & _q == false), 
                     _q), 
                 _q);
@@ -768,11 +769,11 @@ namespace Kanrenmo.Tests
 
         [NotNull]
         private IEnumerable<IReadOnlyDictionary<Var, Var>> Run1([NotNull] Relation relation, params Var[] variables) => 
-            Run(relation, variables).Take(1);
+            Solve(relation, variables).Take(1);
 
         [NotNull]
         private IEnumerable<IReadOnlyDictionary<Var, Var>> Run2([NotNull] Relation relation, params Var[] variables) => 
-            Run(relation, variables).Take(2);
+            Solve(relation, variables).Take(2);
 
         //private Func<T, TRet> Lambda<T, TRet>(Func<T, TRet> lambda) => lambda;
 

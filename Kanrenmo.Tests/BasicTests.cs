@@ -15,7 +15,7 @@ namespace Kanrenmo.Tests
         [InlineData("foo")]
         public void VarCanBeBound<T>(T value)
         {
-            var results = Run(new ValueVar<T>(value) == _q, _q).ToList();
+            var results = Solve(new ValueVar<T>(value) == _q, _q).ToList();
             Assert.Single(results);
             Assert.Single(results[0]);
             Assert.True(results[0].TryGetValue(_q, out var x));
@@ -30,7 +30,7 @@ namespace Kanrenmo.Tests
         {
             
             var relation = values.Aggregate(Relation.Empty, (r, i) => r | _q == i);
-            var results = Run(relation, _q).ToList();
+            var results = Solve(relation, _q).ToList();
             Assert.Equal(values.Length, results.Count);
             Assert.All(results, r => Assert.Single(r));
             foreach (var value in values)

@@ -22,13 +22,13 @@ namespace Kanrenmo
         public static readonly Relation Fail = (Var)true == false;      
 
         /// <summary>
-        /// Runs the specified relation and query the variables.
+        /// Solve the specified relation and query the variables.
         /// </summary>
-        /// <param name="relation">The relation to run.</param>
+        /// <param name="relation">The relation to solve.</param>
         /// <param name="variables">The variables to query.</param>
         /// <returns>Variable bindings enumeration</returns>
         [NotNull, Pure]
-        public static IEnumerable<Binding> Run([NotNull] Relation relation, params Var[] variables) =>
+        public static IEnumerable<Binding> Solve([NotNull] Relation relation, params Var[] variables) =>
             new Context()
                 // add vars to context
                 .With(variables)
@@ -45,7 +45,7 @@ namespace Kanrenmo
         /// <param name="variables">The scoped variables.</param>
         /// <returns>Resulting relation</returns>
         [NotNull, Pure]
-        public static Relation Fresh(Relation relation, params Var[] variables) =>
+        public static Relation Declare(Relation relation, params Var[] variables) =>
             new Relation(parent =>
                     // extend the existing scope with fresh vars
                     parent.With(variables)
@@ -60,7 +60,7 @@ namespace Kanrenmo
         /// <param name="function">The function to invoke.</param>
         /// <returns>Resulting relation</returns>
         [NotNull, Pure]
-        public static Relation Invoke(Func<Relation> function) =>
+        public static Relation Invoke([NotNull] Func<Relation> function) =>
             new Relation(function);
 
 
@@ -100,7 +100,7 @@ namespace Kanrenmo
 
         [NotNull]
         private static SequenceVar Seq([CanBeNull] IEnumerator<Var> variables) =>
-            !(variables?.MoveNext() ?? false) ? SequenceVar.Empty : variables.Current.Cons(Seq(variables));
+            !(variables?.MoveNext() ?? false) ? SequenceVar.Empty : variables.Current.Combine(Seq(variables));
 
         /// <summary>
         /// Unifies two variables returning the new context.

@@ -11,28 +11,28 @@ namespace Kanrenmo
 	public partial class Context
 	{
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Relation> function)
 		{
             var v1 = new Var();
-            return Run(function(v1), v1);
+            return Solve(function(v1), v1);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Relation> function)
 		{
             var v1 = new Var();
-            return Fresh(function(v1), v1);
+            return Declare(function(v1), v1);
 		}
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Kanrenmo
             var v1 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & function(v1),
+                    Declare(a1 == v1 & function(v1),
                         v1).Execute(context));
         }
 
@@ -56,30 +56,30 @@ namespace Kanrenmo
             new Relation(context => function(r1).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
-            return Run(function(v1, v2), v1, v2);
+            return Solve(function(v1, v2), v1, v2);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
-            return Fresh(function(v1, v2), v1, v2);
+            return Declare(function(v1, v2), v1, v2);
 		}
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Kanrenmo
             var v2 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & function(v1, v2),
+                    Declare(a1 == v1 & a2 == v2 & function(v1, v2),
                         v1, v2).Execute(context));
         }
 
@@ -104,32 +104,32 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
-            return Run(function(v1, v2, v3), v1, v2, v3);
+            return Solve(function(v1, v2, v3), v1, v2, v3);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
-            return Fresh(function(v1, v2, v3), v1, v2, v3);
+            return Declare(function(v1, v2, v3), v1, v2, v3);
 		}
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Kanrenmo
             var v3 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & function(v1, v2, v3),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & function(v1, v2, v3),
                         v1, v2, v3).Execute(context));
         }
 
@@ -155,34 +155,34 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2, r3).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
             var v4 = new Var();
-            return Run(function(v1, v2, v3, v4), v1, v2, v3, v4);
+            return Solve(function(v1, v2, v3, v4), v1, v2, v3, v4);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
             var v4 = new Var();
-            return Fresh(function(v1, v2, v3, v4), v1, v2, v3, v4);
+            return Declare(function(v1, v2, v3, v4), v1, v2, v3, v4);
 		}
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Kanrenmo
             var v4 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & function(v1, v2, v3, v4),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & function(v1, v2, v3, v4),
                         v1, v2, v3, v4).Execute(context));
         }
 
@@ -209,36 +209,36 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2, r3, r4).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
             var v4 = new Var();
             var v5 = new Var();
-            return Run(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
+            return Solve(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
             var v3 = new Var();
             var v4 = new Var();
             var v5 = new Var();
-            return Fresh(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
+            return Declare(function(v1, v2, v3, v4, v5), v1, v2, v3, v4, v5);
 		}
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Kanrenmo
             var v5 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & function(v1, v2, v3, v4, v5),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & function(v1, v2, v3, v4, v5),
                         v1, v2, v3, v4, v5).Execute(context));
         }
 
@@ -266,12 +266,12 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2, r3, r4, r5).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -279,17 +279,17 @@ namespace Kanrenmo
             var v4 = new Var();
             var v5 = new Var();
             var v6 = new Var();
-            return Run(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
+            return Solve(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -297,7 +297,7 @@ namespace Kanrenmo
             var v4 = new Var();
             var v5 = new Var();
             var v6 = new Var();
-            return Fresh(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
+            return Declare(function(v1, v2, v3, v4, v5, v6), v1, v2, v3, v4, v5, v6);
 		}
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace Kanrenmo
             var v6 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & function(v1, v2, v3, v4, v5, v6),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & function(v1, v2, v3, v4, v5, v6),
                         v1, v2, v3, v4, v5, v6).Execute(context));
         }
 
@@ -326,12 +326,12 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2, r3, r4, r5, r6).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -340,17 +340,17 @@ namespace Kanrenmo
             var v5 = new Var();
             var v6 = new Var();
             var v7 = new Var();
-            return Run(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
+            return Solve(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -359,7 +359,7 @@ namespace Kanrenmo
             var v5 = new Var();
             var v6 = new Var();
             var v7 = new Var();
-            return Fresh(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
+            return Declare(function(v1, v2, v3, v4, v5, v6, v7), v1, v2, v3, v4, v5, v6, v7);
 		}
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace Kanrenmo
             var v7 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & function(v1, v2, v3, v4, v5, v6, v7),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & function(v1, v2, v3, v4, v5, v6, v7),
                         v1, v2, v3, v4, v5, v6, v7).Execute(context));
         }
 
@@ -389,12 +389,12 @@ namespace Kanrenmo
             new Relation(context => function(r1, r2, r3, r4, r5, r6, r7).Execute(context));
 
         /// <summary>
-        /// Executes the relation specified by function body querying the variables provided by the function arguments
+        /// Solves the relation specified by function body querying the variables provided by the function arguments
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The enumeration of execution results</returns>
+        /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Run([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -404,17 +404,17 @@ namespace Kanrenmo
             var v6 = new Var();
             var v7 = new Var();
             var v8 = new Var();
-            return Run(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
+            return Solve(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
 		}
         
         /// <summary>
-        /// Creates fresh variables specified by the function parameters for the relation 
+        /// Declares new variables specified by the function parameters for the relation 
         /// specified by the function body
         /// </summary>
         /// <param name="function">The relation function.</param>
-        /// <returns>The new relation with fresh variables</returns>
+        /// <returns>The new relation with declared variables</returns>
         [NotNull, Pure]
-		public static Relation Fresh([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static Relation Declare([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -424,7 +424,7 @@ namespace Kanrenmo
             var v6 = new Var();
             var v7 = new Var();
             var v8 = new Var();
-            return Fresh(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
+            return Declare(function(v1, v2, v3, v4, v5, v6, v7, v8), v1, v2, v3, v4, v5, v6, v7, v8);
 		}
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace Kanrenmo
             var v8 = new Var();
             return new Relation(
                 context => 
-                    Fresh(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & a8 == v8 & function(v1, v2, v3, v4, v5, v6, v7, v8),
+                    Declare(a1 == v1 & a2 == v2 & a3 == v3 & a4 == v4 & a5 == v5 & a6 == v6 & a7 == v7 & a8 == v8 & function(v1, v2, v3, v4, v5, v6, v7, v8),
                         v1, v2, v3, v4, v5, v6, v7, v8).Execute(context));
         }
 

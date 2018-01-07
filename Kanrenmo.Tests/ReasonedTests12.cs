@@ -31,7 +31,7 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(indices: new int?[] {0, 1}),
-                Run(r => Fresh((y, x) => new[] { x, y } == r)));
+                Solve(r => Declare((y, x) => new[] { x, y } == r)));
         }
 
 
@@ -50,7 +50,7 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(indices: new int?[] { 0, 1 }),
-                Run(r => Fresh((v, w) => ((Func<Var, Var, Var>)((x, y) => new [] {x, y}))(v, w) == r)));
+                Solve(r => Declare((v, w) => ((Func<Var, Var, Var>)((x, y) => new [] {x, y}))(v, w) == r)));
         }
 /*
 
@@ -95,7 +95,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_6()
         {
-            AssertOneBound('a', Run(r => Seq('a', 'c', 'o', 'r', 'n').Heado(r)));
+            AssertOneBound('a', Solve(r => Seq('a', 'c', 'o', 'r', 'n').HasHead(r)));
         }
 
 
@@ -111,7 +111,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_8()
         {
-            AssertOneBound(true, Run(q => Seq('a', 'c', 'o', 'r', 'n').Heado('a') & q == true));
+            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').HasHead('a') & q == true));
         }
 
 /*
@@ -126,7 +126,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_10()
         {
-            AssertOneBound("pear", Run(r => Fresh((x, y) => Seq(r, y).Heado(x) & x == "pear")));
+            AssertOneBound("pear", Solve(r => Declare((x, y) => Seq(r, y).HasHead(x) & x == "pear")));
         }
 
 /*
@@ -144,7 +144,7 @@ namespace Kanrenmo.Tests
                 new Var[] {"grape", 'a'},
                 Seq("grape", "raisin", "pear")
                     .Head()
-                    .Cons(Seq(Seq('a'), Seq('b'), Seq('c')).Head()));
+                    .Combine(Seq(Seq('a'), Seq('b'), Seq('c')).Head()));
         }
 
 /*
@@ -163,10 +163,10 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(new object[] { "grape", 'a'}),
-                Run(r => Fresh((x, y) => 
-                    Seq("grape", "raisin", "pear").Heado(x) 
-                    & Seq(Seq('a'), Seq('b'), Seq('c')).Heado(y)
-                    & x.Cons(y) == r)));
+                Solve(r => Declare((x, y) => 
+                    Seq("grape", "raisin", "pear").HasHead(x) 
+                    & Seq(Seq('a'), Seq('b'), Seq('c')).HasHead(y)
+                    & x.Combine(y) == r)));
         }
 
 /*
@@ -212,7 +212,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_15()
         {
-            AssertOneBound('c', Run(r => Fresh(v => Seq('a', 'c', 'o', 'r', 'n').Tailo(v) & v.Heado(r))));
+            AssertOneBound('c', Solve(r => Declare(v => Seq('a', 'c', 'o', 'r', 'n').HasTail(v) & v.HasHead(r))));
         }
 
 /*
@@ -228,7 +228,7 @@ namespace Kanrenmo.Tests
         {
             Assert.Equal(
                 Seq(Seq("raisin", "pear"), 'a'), 
-                Seq("grape", "raisin", "pear").Tail().Cons(Seq(Seq('a'), Seq('b'), Seq('c')).Head()));
+                Seq("grape", "raisin", "pear").Tail().Combine(Seq(Seq('a'), Seq('b'), Seq('c')).Head()));
         }
 
 
@@ -247,11 +247,11 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(new object[] {CheckList(new object [] {"raisin", "pear"}), 'a'}),
-                Run(r => 
-                    Fresh((x, y) => 
-                        Seq("grape", "raisin", "pear").Tailo(x)
-                        & Seq(Seq('a'), Seq('b'), Seq('c')).Heado(y)
-                        & x.Cons(y) == r)));
+                Solve(r => 
+                    Declare((x, y) => 
+                        Seq("grape", "raisin", "pear").HasTail(x)
+                        & Seq(Seq('a'), Seq('b'), Seq('c')).HasHead(y)
+                        & x.Combine(y) == r)));
         }
 
 /*
@@ -265,7 +265,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_18()
         {
-            AssertOneBound(true, Run(q => Seq('a', 'c', 'o', 'r', 'n').Tailo(Seq('c', 'o', 'r', 'n')) & q == true));
+            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').HasTail(Seq('c', 'o', 'r', 'n')) & q == true));
         }
 
 /*
@@ -294,7 +294,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_20()
         {
-            AssertOneBound('o', Run(x => Seq('c', 'o', 'r', 'n').Tailo(Seq(x, 'r', 'n'))));
+            AssertOneBound('o', Solve(x => Seq('c', 'o', 'r', 'n').HasTail(Seq(x, 'r', 'n'))));
         }
 
 /*
@@ -328,7 +328,7 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(new object[] {'a', 'c', 'o', 'r', 'n'}),
-                Run(l => Fresh(x => l.Tailo(Seq('c', 'o', 'r', 'n')) & l.Heado(x) & x == 'a')));
+                Solve(l => Declare(x => l.HasTail(Seq('c', 'o', 'r', 'n')) & l.HasHead(x) & x == 'a')));
         }
 
 /*
@@ -343,13 +343,30 @@ namespace Kanrenmo.Tests
           (conso '(a b c) '(d e) l))
 
         (list `((a b c) d e)))
+*/
+        [Fact]
+        public void Test12_23()
+        {
+            AssertOneBound(
+                CheckList(new object[] {CheckList(new object[] {'a', 'b', 'c'}), 'd', 'e'}),
+                Solve(l => l.Consists(Seq('a', 'b', 'c'), Seq('d', 'e'))));
+        }
 
+/*
         (test-check "testc12.tex-24" 
         (run* (x)
           (conso x '(a b c) '(d a b c)))
 
         (list 'd))
+*/
+        [Fact]
+        public void Test12_24()
+        {
+            AssertOneBound('d', Solve(x => Seq('d', 'a', 'b', 'c').Consists(x, Seq('a', 'b', 'c'))));
+        }
 
+
+/*
         (test-check "testc12.tex-25" (cons 'd '(a b c))
         `(d a b c))
 
