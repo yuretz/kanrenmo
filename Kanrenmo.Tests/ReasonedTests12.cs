@@ -95,7 +95,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_6()
         {
-            AssertOneBound('a', Solve(r => Seq('a', 'c', 'o', 'r', 'n').HasHead(r)));
+            AssertOneBound('a', Solve(r => Seq('a', 'c', 'o', 'r', 'n').Must.HaveHead(r)));
         }
 
 
@@ -111,7 +111,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_8()
         {
-            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').HasHead('a') & q == true));
+            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').Must.HaveHead('a') & q == true));
         }
 
 /*
@@ -126,7 +126,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_10()
         {
-            AssertOneBound("pear", Solve(r => Declare((x, y) => Seq(r, y).HasHead(x) & x == "pear")));
+            AssertOneBound("pear", Solve(r => Declare((x, y) => Seq(r, y).Must.HaveHead(x) & x == "pear")));
         }
 
 /*
@@ -164,8 +164,8 @@ namespace Kanrenmo.Tests
             AssertOneBound(
                 CheckList(new object[] { "grape", 'a'}),
                 Solve(r => Declare((x, y) => 
-                    Seq("grape", "raisin", "pear").HasHead(x) 
-                    & Seq(Seq('a'), Seq('b'), Seq('c')).HasHead(y)
+                    Seq("grape", "raisin", "pear").Must.HaveHead(x) 
+                    & Seq(Seq('a'), Seq('b'), Seq('c')).Must.HaveHead(y)
                     & x.Combine(y) == r)));
         }
 
@@ -212,7 +212,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_15()
         {
-            AssertOneBound('c', Solve(r => Declare(v => Seq('a', 'c', 'o', 'r', 'n').HasTail(v) & v.HasHead(r))));
+            AssertOneBound('c', Solve(r => Declare(v => Seq('a', 'c', 'o', 'r', 'n').Must.HaveTail(v) & v.Must.HaveHead(r))));
         }
 
 /*
@@ -249,8 +249,8 @@ namespace Kanrenmo.Tests
                 CheckList(new object[] {CheckList(new object [] {"raisin", "pear"}), 'a'}),
                 Solve(r => 
                     Declare((x, y) => 
-                        Seq("grape", "raisin", "pear").HasTail(x)
-                        & Seq(Seq('a'), Seq('b'), Seq('c')).HasHead(y)
+                        Seq("grape", "raisin", "pear").Must.HaveTail(x)
+                        & Seq(Seq('a'), Seq('b'), Seq('c')).Must.HaveHead(y)
                         & x.Combine(y) == r)));
         }
 
@@ -265,7 +265,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_18()
         {
-            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').HasTail(Seq('c', 'o', 'r', 'n')) & q == true));
+            AssertOneBound(true, Solve(q => Seq('a', 'c', 'o', 'r', 'n').Must.HaveTail(Seq('c', 'o', 'r', 'n')) & q == true));
         }
 
 /*
@@ -294,7 +294,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_20()
         {
-            AssertOneBound('o', Solve(x => Seq('c', 'o', 'r', 'n').HasTail(Seq(x, 'r', 'n'))));
+            AssertOneBound('o', Solve(x => Seq('c', 'o', 'r', 'n').Must.HaveTail(Seq(x, 'r', 'n'))));
         }
 
 /*
@@ -328,7 +328,12 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(new object[] {'a', 'c', 'o', 'r', 'n'}),
-                Solve(l => Declare(x => l.HasTail(Seq('c', 'o', 'r', 'n')) & l.HasHead(x) & x == 'a')));
+                Solve(l => Declare(
+                    x => 
+                        l.Must
+                            .HaveTail(Seq('c', 'o', 'r', 'n'))
+                            .HaveHead(x) 
+                        & x == 'a')));
         }
 
 /*
@@ -349,7 +354,7 @@ namespace Kanrenmo.Tests
         {
             AssertOneBound(
                 CheckList(new object[] {CheckList(new object[] {'a', 'b', 'c'}), 'd', 'e'}),
-                Solve(l => l.Consists(Seq('a', 'b', 'c'), Seq('d', 'e'))));
+                Solve(l => l.Must.Consist(Seq('a', 'b', 'c'), Seq('d', 'e'))));
         }
 
 /*
@@ -362,7 +367,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_24()
         {
-            AssertOneBound('d', Solve(x => Seq('d', 'a', 'b', 'c').Consists(x, Seq('a', 'b', 'c'))));
+            AssertOneBound('d', Solve(x => Seq('d', 'a', 'b', 'c').Must.Consist(x, Seq('a', 'b', 'c'))));
         }
 
 
@@ -392,7 +397,7 @@ namespace Kanrenmo.Tests
                 Solve(r => 
                     Declare((x, y, z) =>
                         r == Seq('e', 'a', 'd', x) 
-                        & r.Consists(y, Seq('a', z, 'c')))));
+                        & r.Must.Consist(y, Seq('a', z, 'c')))));
         }
 
 /*
@@ -406,7 +411,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_27()
         {
-            AssertOneBound('d', Solve(x => Seq('d', 'a', x, 'c').Consists(x, Seq('a', x, 'c'))));
+            AssertOneBound('d', Solve(x => Seq('d', 'a', x, 'c').Must.Consist(x, Seq('a', x, 'c'))));
         }
 
 
@@ -427,7 +432,7 @@ namespace Kanrenmo.Tests
                 Solve(l => 
                     Declare(x =>
                         l == Seq('d', 'a', x, 'c')
-                        & l.Consists(x, Seq('a', x, 'c')))));
+                        & l.Must.Consist(x, Seq('a', x, 'c')))));
         }
 
 /*
@@ -446,7 +451,7 @@ namespace Kanrenmo.Tests
                 CheckList(new object[] {'d', 'a', 'd', 'c'}),
                 Solve(l =>
                     Declare(x =>
-                        l.Consists(x, Seq('a', x, 'c'))
+                        l.Must.Consist(x, Seq('a', x, 'c'))
                         & l == Seq('d', 'a', x, 'c'))));
         }
 
@@ -472,12 +477,13 @@ namespace Kanrenmo.Tests
                 CheckList(new object[] {'b', 'e', 'a', 'n', 's'}),
                 Solve(l =>
                     Declare((d, x, y, w, s) =>
-                        s.Consists(w, Seq('a', 'n', 's'))
-                        & l.HasTail(s)
-                        & l.HasHead(x)
+                        s.Must.Consist(w, Seq('a', 'n', 's'))
+                        & l.Must
+                            .HaveTail(s)
+                            .HaveHead(x)
                         & x == 'b'
-                        & l.HasTail(d)
-                        & d.HasHead(y)
+                        & l.Must.HaveTail(d)
+                        & d.Must.HaveHead(y)
                         & y == 'e')));
         }
 
@@ -522,7 +528,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_34()
         {
-            Assert.Empty(Solve(q => Seq("grape", "raisin", "pear").HasNothing() & q == true));
+            Assert.Empty(Solve(q => Seq("grape", "raisin", "pear").Must.BeEmpty() & q == true));
         }
 
 /*
@@ -537,8 +543,8 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_35()
         {
-            AssertOneBound(true, Solve(q => PairVar.Empty.HasNothing() & q == true));
-            AssertOneBound(true, Solve(q => Seq().HasNothing() & q == true));
+            AssertOneBound(true, Solve(q => PairVar.Empty.Must.BeEmpty() & q == true));
+            AssertOneBound(true, Solve(q => Seq().Must.BeEmpty() & q == true));
         }
 
 /*
@@ -551,7 +557,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_36()
         {
-            AssertOneBound((Predicate<Var>)(v => (v is PairVar s) && s.IsEmpty), Solve(x => x.HasNothing()));
+            AssertOneBound((Predicate<Var>)(v => (v is PairVar s) && s.IsEmpty), Solve(x => x.Must.BeEmpty()));
         }
 
 /*
@@ -586,7 +592,6 @@ namespace Kanrenmo.Tests
           (lambda (x y)
             (== x y)))
 */
-        public Relation AreEqual(Var x, Var y) => x == y;
 
 /*
         (test-check "testc12.tex-39" 
@@ -599,7 +604,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_39()
         {
-            Assert.Empty(Solve(q => AreEqual("pear", "plum") & q == true));
+            Assert.Empty(Solve(q => Var("pear").Must.BeEqual("plum") & q == true));
         }
 
 /*
@@ -613,7 +618,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_40()
         {
-            AssertOneBound(true, Solve(q => AreEqual("plum", "plum") & q == true));
+            AssertOneBound(true, Solve(q => Var("plum").Must.BeEqual("plum") & q == true));
         }
 
 /*

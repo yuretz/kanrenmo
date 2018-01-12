@@ -104,6 +104,17 @@ namespace Kanrenmo
         public virtual bool Bound => false;
 
         /// <summary>
+        /// Determines whether this instance is an empty sequence variable.
+        /// </summary>
+        public bool IsEmpty => Equals(this, PairVar.Empty);
+
+        /// <summary>
+        /// Gets a helper relation wrapping this variable.
+        /// </summary>
+        [NotNull]
+        public VarRelation Must => new VarRelation(this);
+
+        /// <summary>
         /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>

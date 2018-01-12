@@ -32,10 +32,10 @@ namespace Kanrenmo
         /// </summary>
         public override bool Bound => true;
 
-        /// <summary>
-        /// Gets a value indicating whether this sequence is empty.
-        /// </summary>
-        public bool IsEmpty => Equals(_head, null);
+        ///// <summary>
+        ///// Gets a value indicating whether this sequence is empty.
+        ///// </summary>
+        //public bool IsEmpty => Equals(_head, null);
 
         /// <summary>
         /// Gets the head element of the sequence.
