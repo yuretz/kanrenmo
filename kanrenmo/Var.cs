@@ -9,6 +9,11 @@ namespace Kanrenmo
     public class Var
     {
         /// <summary>
+        /// The empty variable
+        /// </summary>
+        public static readonly Var Empty = Context.Var<object>(null);
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="int"/> to <see cref="Var"/>.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -106,7 +111,12 @@ namespace Kanrenmo
         /// <summary>
         /// Determines whether this instance is an empty sequence variable.
         /// </summary>
-        public bool IsEmpty => Equals(this, PairVar.Empty);
+        public bool IsEmpty => Equals(this, Empty);
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a pair.
+        /// </summary>
+        public bool IsPair => this is PairVar;
 
         /// <summary>
         /// Gets a helper relation wrapping this variable.

@@ -64,8 +64,17 @@ namespace Kanrenmo
             new Relation(function);
 
 
+        /// <summary>
+        /// Makes a variable out of the specified value
+        /// </summary>
+        /// <typeparam name="T">the value type</typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>variable instance</returns>
         [NotNull, Pure]
         public static Var Var<T>(T value) => (ValueVar<T>) value;
+
+        [NotNull, Pure]
+        public static Var Pair(Var head, Var tail) => new PairVar(head, tail);
 
         /// <summary>
         /// Converts variable enumeration to a sequence of nested <see cref="PairVar"/>
@@ -73,8 +82,8 @@ namespace Kanrenmo
         /// <param name="variables">The variables enumeration.</param>
         /// <returns>new sequence of nested pair variable instances</returns>
         [NotNull, Pure]
-        public static PairVar Seq([CanBeNull] IEnumerable<Var> variables) => 
-            variables == null ? PairVar.Empty : Seq(variables.GetEnumerator());
+        public static Var Seq([CanBeNull] IEnumerable<Var> variables) => 
+            variables == null ? (Kanrenmo.Var.Empty) : Seq(variables.GetEnumerator());
 
         /// <summary>
         /// Converts variables to a to a sequence of nested <see cref="PairVar"/>
@@ -82,7 +91,7 @@ namespace Kanrenmo
         /// <param name="variables">The variables.</param>
         /// <returns>new sequence of nested pair variable instances</returns>
         [NotNull, Pure]
-        public static PairVar Seq(params Var[] variables) => Seq(variables.AsEnumerable());
+        public static Var Seq(params Var[] variables) => Seq(variables.AsEnumerable());
 
         /// <summary>
         /// Unifies two variables.
@@ -99,8 +108,8 @@ namespace Kanrenmo
         }
 
         [NotNull]
-        private static PairVar Seq([CanBeNull] IEnumerator<Var> variables) =>
-            !(variables?.MoveNext() ?? false) ? PairVar.Empty : variables.Current.Combine(Seq(variables));
+        private static Var Seq([CanBeNull] IEnumerator<Var> variables) =>
+            !(variables?.MoveNext() ?? false) ? Kanrenmo.Var.Empty : variables.Current.Combine(Seq(variables));
 
         /// <summary>
         /// Unifies two variables returning the new context.
@@ -265,7 +274,7 @@ namespace Kanrenmo
         /// <returns>reified pair</returns>
         [NotNull]
         private Var ReifyImpl([NotNull] PairVar pair) => 
-            pair.IsEmpty ? PairVar.Empty : new PairVar(Reify(pair.Head()), Reify(pair.Tail()));
+            pair.IsEmpty ? Kanrenmo.Var.Empty : new PairVar(Reify(pair.Head()), Reify(pair.Tail()));
 
         /// <summary>
         /// Queries all the provided variables.

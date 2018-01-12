@@ -508,7 +508,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_33()
         {
-            Assert.True(PairVar.Empty.IsEmpty);
+            Assert.True(Var.Empty.IsEmpty);
             Assert.True(Seq().IsEmpty);
         }
 /*
@@ -543,7 +543,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_35()
         {
-            AssertOneBound(true, Solve(q => PairVar.Empty.Must.BeEmpty() & q == true));
+            AssertOneBound(true, Solve(q => Var.Empty.Must.BeEmpty() & q == true));
             AssertOneBound(true, Solve(q => Seq().Must.BeEmpty() & q == true));
         }
 
@@ -557,7 +557,7 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_36()
         {
-            AssertOneBound((Predicate<Var>)(v => (v is PairVar s) && s.IsEmpty), Solve(x => x.Must.BeEmpty()));
+            AssertOneBound((Predicate<Var>)(v => v.IsEmpty), Solve(x => x.Must.BeEmpty()));
         }
 
 /*
@@ -626,26 +626,64 @@ namespace Kanrenmo.Tests
         (pair? `((split) . pea))
 
         #t)
+*/
+        [Fact]
+        public void Test12_41()
+        {
+            Assert.True(new PairVar(Seq("split"), "pea").IsPair);
+        }
 
+/*
         (test-check "testc12.tex-42"   
         (pair? '())
 
         #f)
+*/
+        [Fact]
+        public void Test12_42()
+        {
+            Assert.False(Var.Empty.IsPair);
+        }
 
+/*
         (test-check "testc12.tex-43" 
         (car `(pear))
 
         `pear)
+*/
+        [Fact]
+        public void Test12_43()
+        {
+            Assert.Equal(Var("pear"), Seq("pear").Head());
+        }
+
+/*
 
         (test-check "testc12.tex-44" 
         (cdr `(pear))
 
         `())
+*/
+        [Fact]
+        public void Test12_44()
+        {
+            Assert.Equal(Var.Empty, Seq("pear").Tail());
+            Assert.True(Seq("pear").Tail().IsEmpty);
+        }
+/*
 
         (test-check "testc12.tex-45"   
         (cons `(split) 'pea)
 
         `((split) . pea))
+*/
+        [Fact]
+        public void Test12_45()
+        {
+            Assert.Equal(Pair(Seq("split"), "pea"), Seq("split").Combine("pea"));
+        }
+
+/*
 
         (test-check "testc12.tex-46"   
         (run* (r) 
@@ -653,6 +691,11 @@ namespace Kanrenmo.Tests
             (== (cons x (cons y 'salad)) r)))
 
         (list `(_.0 _.1 . salad)))
+*/
+        
+
+
+/*
 
         (define pairo
           (lambda (p)

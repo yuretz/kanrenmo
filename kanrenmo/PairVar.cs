@@ -12,30 +12,20 @@ namespace Kanrenmo
     public class PairVar : Var, IEnumerable<Var>
     {
         /// <summary>
-        /// The empty sequence
-        /// </summary>
-        public static readonly PairVar Empty = new PairVar(null, null);
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PairVar" /> class.
         /// </summary>
         /// <param name="head">Sequnce head.</param>
         /// <param name="tail">Sequence tail.</param>
-        internal PairVar([CanBeNull] Var head, [CanBeNull] Var tail)
+        public PairVar([CanBeNull] Var head = null, [CanBeNull] Var tail = null)
         {
-            _head = head;
-            _tail = Equals(head, null) ? null : (tail ?? Empty);
+            _head = head ?? Empty;
+            _tail = tail ?? Empty;
         }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Var" /> is bound to a value.
         /// </summary>
         public override bool Bound => true;
-
-        ///// <summary>
-        ///// Gets a value indicating whether this sequence is empty.
-        ///// </summary>
-        //public bool IsEmpty => Equals(_head, null);
 
         /// <summary>
         /// Gets the head element of the sequence.
@@ -109,16 +99,15 @@ namespace Kanrenmo
                 
                 switch (_variable)
                 {
-                    case null:
-                    case PairVar sequence when Equals(sequence._head, null):
-                        return false;
                     case PairVar sequence:
                         Current = sequence._head;
                         _variable = sequence._tail;
                         return true;
+                    case Var variable when variable.IsEmpty:
+                        return false;
                     default:
                         Current = _variable;
-                        _variable = null;
+                        _variable = Empty;
                         return true;
                 }
 

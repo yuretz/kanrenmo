@@ -14,7 +14,7 @@ namespace Kanrenmo
         }
 
         [NotNull, Pure]
-        public VarRelation BeEmpty() => new VarRelation(_variable, this & _variable == PairVar.Empty);
+        public VarRelation BeEmpty() => new VarRelation(_variable, this & _variable == Var.Empty);
 
         [NotNull, Pure]
         public VarRelation BeEqual([NotNull] Var other) => new VarRelation(_variable, this & _variable == other);
