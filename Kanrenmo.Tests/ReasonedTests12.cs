@@ -680,7 +680,8 @@ namespace Kanrenmo.Tests
         [Fact]
         public void Test12_45()
         {
-            Assert.Equal(Pair(Seq("split"), "pea"), Seq("split").Combine("pea"));
+            //Assert.Equal(Pair(Seq("split"), "pea"), Seq("split").Combine("pea"));
+            Assert.True(Pair(Seq("split"), "pea").Equals(Seq("split").Combine("pea")));
         }
 
 /*
@@ -692,7 +693,13 @@ namespace Kanrenmo.Tests
 
         (list `(_.0 _.1 . salad)))
 */
-        
+        [Fact]
+        public void Test12_46()
+        {
+            AssertOneBound(
+                CheckList(new object[] { null, CheckPair(new object[] {CheckUnbound, "salad"}) }),
+                Solve(r => Declare((x, y) => x.Combine(y.Combine("salad")) == r)));
+        }
 
 
 /*
@@ -709,13 +716,28 @@ namespace Kanrenmo.Tests
           (== #t q))
 
         `(#t))
+*/
+        [Fact]
+        public void Test12_47()
+        {
+            AssertOneBound(true, Solve(q => q.Combine(q).Must.BePair() & q == true));
+        }
 
+/*
         (test-check "testc12.tex-48" 
         (run* (q)
           (pairo '())
           (== #t q))
 
         `())
+*/
+        [Fact]
+        public void Test12_48()
+        {
+            Assert.Empty(Solve(q => Var.Empty.Must.BePair() & q == true));
+        }
+
+/*
 
         (test-check "testc12.tex-49" 
         (run* (q)
@@ -723,22 +745,46 @@ namespace Kanrenmo.Tests
           (== #t q))
 
         `())
+*/
+
+        [Fact]
+        public void Test12_49()
+        {
+            Assert.Empty(Solve(q => Var("pair").Must.BePair() & q == true));
+        }
+
+
+/*
 
         (test-check "testc12.tex-50"   
         (run* (x) 
           (pairo x))
 
         (list `(_.0 . _.1)))
+*/
+        [Fact]
+        public void Test12_50()
+        {
+            AssertOneBound(
+                CheckPair(new object[] {CheckUnbound, CheckUnbound}, false),
+                Solve(x => x.Must.BePair()));
+        }
 
+/*
         (test-check "testc12.tex-51"   
         (run* (r) 
           (pairo (cons r 'pear)))
 
         (list `_.0))
-
-
-
 */
+        [Fact]
+        public void Test12_51()
+        {
+            AssertOneUnbound(Solve(r => r.Combine("pear").Must.BePair()));
+        }
+
+        [NotNull]
+        private Predicate<Var> CheckUnbound => v => !v.Bound;
 
 
         [NotNull]
@@ -802,6 +848,50 @@ namespace Kanrenmo.Tests
 
             return true;
         };
+
+        [NotNull]
+        private Predicate<Var> CheckPair([CanBeNull] object[] values = null, bool? twins = null) =>
+            variable =>
+            {
+                if (!(variable is PairVar pair))
+                {
+                    return false;
+                }
+
+                var asserted = new[] {pair.Head(), pair.Tail()};
+
+                if (values != null)
+                {
+                    Assert.Equal(2, values.Length);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        if (values[i] != null)
+                        {
+                            if (values[i] is Predicate<Var> predicate)
+                            {
+                                Assert.True(predicate(asserted[i]));
+                            }
+                            else if (values[i] is ValueVar value)
+                            {
+                                Assert.Equal(value, asserted[i]);
+                            }
+                            else
+                            {
+                                var valueVar = asserted[i] as ValueVar;
+                                Assert.NotNull(valueVar);
+                                Assert.Equal(values[i], valueVar.UntypedValue);
+                            }
+                        }
+                    }
+                }
+
+                if (twins != null)
+                {
+                    Assert.Equal(twins.Value, Equals(asserted[0], asserted[1]));
+                }
+
+                return true;
+            };
 
         [AssertionMethod]
         private void AssertOneBound(object value, [NotNull] IEnumerable<IReadOnlyList<Var>> results)

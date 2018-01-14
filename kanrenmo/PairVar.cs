@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Kanrenmo.Annotations;
 
 namespace Kanrenmo
@@ -46,7 +45,9 @@ namespace Kanrenmo
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
         [NotNull]
-        public IEnumerator<Var> GetEnumerator() => new SequenceEnumerator(this);
+        public IEnumerator<Var> GetEnumerator() =>
+            //AllLeafVariables().GetEnumerator();
+            new SequenceEnumerator(this);
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -55,7 +56,9 @@ namespace Kanrenmo
         /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
         /// </returns>
         [NotNull]
-        IEnumerator IEnumerable.GetEnumerator() => new SequenceEnumerator(this);
+        IEnumerator IEnumerable.GetEnumerator() => 
+            //AllLeafVariables().GetEnumerator();
+            new SequenceEnumerator(this);
 
 
         /// <summary>
@@ -65,7 +68,8 @@ namespace Kanrenmo
         /// <returns>
         ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj) => (obj is PairVar other) && this.SequenceEqual(other);
+        public override bool Equals(object obj) => 
+            obj is PairVar other && Equals(_head, other._head) && Equals(_tail, other._tail);//this.SequenceEqual(other);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -74,7 +78,8 @@ namespace Kanrenmo
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode() =>
-            this.Aggregate(5381, (hash, variable) => hash * 33 ^ (variable?.GetHashCode() ?? 0));
+            (((5381 * 33) ^ _head.GetHashCode()) * 33) ^ _tail.GetHashCode();
+            
         
 
         private struct SequenceEnumerator : IEnumerator<Var>
@@ -99,7 +104,7 @@ namespace Kanrenmo
                 
                 switch (_variable)
                 {
-                    case PairVar sequence:
+                    case PairVar sequence when (sequence._tail is PairVar || sequence._tail.IsEmpty):
                         Current = sequence._head;
                         _variable = sequence._tail;
                         return true;

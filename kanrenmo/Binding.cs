@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -20,14 +21,18 @@ namespace Kanrenmo
 
 
         public int Count => _pairs.Count;
+
+        [NotNull]
         public IEnumerable<Var> Keys => _pairs.Select(pair => pair.Key);
+
+        [NotNull]
         public IEnumerable<Var> Values => _pairs.Select(pair => pair.Value);
         public bool ContainsKey(Var key) => _bindings.ContainsKey(key);
 
 
         public bool TryGetValue(Var key, out Var value) => _bindings.TryGetValue(key, out value);
 
-
+        [NotNull]
         IEnumerator<KeyValuePair<Var, Var>> IEnumerable<KeyValuePair<Var, Var>>.GetEnumerator() =>
             _pairs.GetEnumerator();
 

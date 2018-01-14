@@ -28,6 +28,9 @@ namespace Kanrenmo
         [NotNull, Pure]
         public VarRelation Consist([NotNull] Var head, [NotNull] Var tail) => new VarRelation(_variable, this & head.Combine(tail) == _variable);
 
+        [NotNull, Pure]
+        public VarRelation BePair() => new VarRelation(_variable, this & Declare((head, tail) => _variable.Must.Consist(head, tail)));
+
         private readonly Var _variable;
     }
 }
