@@ -161,6 +161,15 @@ namespace Kanrenmo
         /// <exception cref="InvalidOperationException">when this variable is not a <see cref="PairVar"/></exception>
         public virtual Var Tail() => throw new InvalidOperationException($"Variable {Id} is not a sequence");
 
+        /// <summary>
+        /// Check whether this variable includes another one
+        /// </summary>
+        /// <param name="variable">The variable to check.</param>
+        /// <returns>
+        /// true if it does, false otherwise
+        /// </returns>
+        public virtual bool Includes(Var variable) => Equals(this, variable);
+
         private static int _id;
     }
 }

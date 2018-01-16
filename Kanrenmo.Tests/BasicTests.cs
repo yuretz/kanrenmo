@@ -38,7 +38,33 @@ namespace Kanrenmo.Tests
                 Assert.Contains(results, d => d.TryGetValue(_q, out var x) && (x as ValueVar<int>)?.Value == value);
             }
         }
+
+        [Fact]
+        public void OccursCheckIsDoneForPairHeads()
+        {
+            Assert.Empty(Solve(q => q == Pair(q, 1)));
+        }
         
+        [Fact]
+        public void OccursCheckIsDoneForPairTails()
+        {
+            Assert.Empty(Solve(q => q == Pair(1, q)));
+        }
+
+        [Fact]
+        public void OccursCheckIsDoneForSequences()
+        {
+            Assert.Empty(Solve(q => q == Seq(1, 2, q, 3, 4)));
+        }
+
+        [Fact]
+        public void OccursCheckIsDoneWeirdStructs()
+        {
+            Assert.Empty(
+                Solve(q =>
+                    Declare(r => q == Seq(1, 2, Pair(Seq(5, 7, 8), Seq(Pair(Pair(2, Seq(2, r, 3)), 4))), 3, 4)
+                                 & r == q)));
+        }
 
         private readonly Var _q = new Var();
     }

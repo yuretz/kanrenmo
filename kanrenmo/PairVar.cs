@@ -39,6 +39,15 @@ namespace Kanrenmo
         public override Var Tail() => _tail;
 
         /// <summary>
+        /// Check whether this variable includes another one
+        /// </summary>
+        /// <param name="variable">The variable to check.</param>
+        /// <returns>
+        /// true if it does, false otherwise
+        /// </returns>
+        public override bool Includes(Var variable) => _head.Includes(variable) || _tail.Includes(variable);
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>

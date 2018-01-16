@@ -126,6 +126,7 @@ namespace Kanrenmo
 
             if (Equals(left, right))
             {
+                // this is useful to avoid circular bindings
                 return this;
             }
 
@@ -190,8 +191,9 @@ namespace Kanrenmo
         /// <param name="unbound">The unbound variable.</param>
         /// <param name="other">The other variable.</param>
         /// <returns>The resulting context</returns>
-        [NotNull]
-        private Context UnifyUnbound(Var unbound, Var other) => new Context(_scope, _environment.Add(unbound, other));
+        [CanBeNull]
+        private Context UnifyUnbound([NotNull] Var unbound, [NotNull] Var other) => 
+            other.Includes(unbound) ? null : new Context(_scope, _environment.Add(unbound, other));
 
         /// <summary>
         /// Unifies two bound variables.
