@@ -40,7 +40,6 @@ namespace Kanrenmo
         IEnumerator IEnumerable.GetEnumerator() => Values.GetEnumerator();
 
         IEnumerator<Var> IEnumerable<Var>.GetEnumerator() => Values.GetEnumerator();
-        
 
         private readonly Dictionary<Var, Var> _bindings;
 

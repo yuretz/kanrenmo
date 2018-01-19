@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Kanrenmo.Annotations;
 
 namespace Kanrenmo
@@ -116,7 +118,12 @@ namespace Kanrenmo
         /// <summary>
         /// Gets a value indicating whether this instance is a pair.
         /// </summary>
-        public bool IsPair => this is PairVar;
+        public virtual bool IsPair => false;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is list.
+        /// </summary>
+        public virtual bool IsSequence => false;
 
         /// <summary>
         /// Gets a helper relation wrapping this variable.
@@ -169,6 +176,25 @@ namespace Kanrenmo
         /// true if it does, false otherwise
         /// </returns>
         public virtual bool Includes(Var variable) => Equals(this, variable);
+
+        /// <summary>
+        /// Converts this variable instance to s-expression.
+        /// </summary>
+        /// <param name="unbound">The unbound variables list.</param>
+        /// <returns>S-expression string</returns>
+        [NotNull]
+        internal virtual string ToSExpression([NotNull] SortedList<int, Var> unbound)
+        {
+            int index;
+            if ((index = unbound.IndexOfValue(this)) < 0)
+            {
+                index = unbound.Count;
+                unbound.Add(index, this);
+            }
+
+            return "_." + index.ToString(CultureInfo.InvariantCulture);
+        }
+
 
         private static int _id;
     }

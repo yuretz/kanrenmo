@@ -1,4 +1,7 @@
-﻿using Kanrenmo.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -47,6 +50,7 @@ namespace Kanrenmo
         public T Value { get; }
 
         public override object UntypedValue => Value;
+        
 
         /// <summary>
         /// Determines whether the specified <see cref="object" />, is equal to this instance.
@@ -64,6 +68,16 @@ namespace Kanrenmo
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+
+        /// <summary>
+        /// Converts this variable instance to s-expression.
+        /// </summary>
+        /// <param name="unbound">The unbound variables list.</param>
+        /// <returns>
+        /// S-expression string
+        /// </returns>
+        internal override string ToSExpression(SortedList<int, Var> unbound) =>
+            Convert.ToString(Value, CultureInfo.InvariantCulture);
     }
 
 }

@@ -94,6 +94,17 @@ namespace Kanrenmo
         public static Var Seq(params Var[] variables) => Seq(variables.AsEnumerable());
 
         /// <summary>
+        /// Convert this instance to S-expression
+        /// </summary>
+        /// <returns>S-expression string</returns>
+        [NotNull]
+        public static string ToSExpression(IEnumerable<Var> variables)
+        {
+            var unbound = new SortedList<int,Var>();
+            return "(" + string.Join(" ", variables.Select(v => v.ToSExpression(unbound))) + ")";
+        }
+
+        /// <summary>
         /// Unifies two variables.
         /// </summary>
         /// <param name="left">The unbound variable.</param>

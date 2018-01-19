@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Kanrenmo.Annotations;
 
 namespace Kanrenmo
@@ -48,6 +49,16 @@ namespace Kanrenmo
         public override bool Includes(Var variable) => _head.Includes(variable) || _tail.Includes(variable);
 
         /// <summary>
+        /// Gets a value indicating whether this instance is a pair.
+        /// </summary>
+        public override bool IsPair => true;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is list.
+        /// </summary>
+        public override bool IsSequence => _tail.IsEmpty || _tail.IsSequence;
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
@@ -88,7 +99,18 @@ namespace Kanrenmo
         /// </returns>
         public override int GetHashCode() =>
             (((5381 * 33) ^ _head.GetHashCode()) * 33) ^ _tail.GetHashCode();
-            
+
+        /// <summary>
+        /// Converts this variable instance to s-expression.
+        /// </summary>
+        /// <param name="unbound">The unbound variables list.</param>
+        /// <returns>
+        /// S-expression string
+        /// </returns>
+        internal override string ToSExpression(SortedList<int, Var> unbound) =>
+            IsSequence
+                ? "(" + string.Join(" ", this.Select(v => v.ToSExpression(unbound))) + ")"
+                : "(" + _head.ToSExpression(unbound) + " . " + _tail.ToSExpression(unbound) + ")"; 
         
 
         private struct SequenceEnumerator : IEnumerator<Var>
