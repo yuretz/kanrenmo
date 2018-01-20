@@ -76,8 +76,22 @@ namespace Kanrenmo
         /// <returns>
         /// S-expression string
         /// </returns>
-        internal override string ToSExpression(SortedList<int, Var> unbound) =>
-            Convert.ToString(Value, CultureInfo.InvariantCulture);
+        internal override string ToSExpression(SortedList<int, Var> unbound)
+        {
+            switch (Value)
+            {
+                case string s:
+                    return "\"" + s.Replace("\"", "\"\"") + "\"";
+                case char c:
+                    return "'" + (c == '\'' ? @"\'" : c.ToString()) + "'";
+                case bool b:
+                    return b ? "true" : "false"; // work around silly C# boolean values capitalization 
+                default:
+                    return Convert.ToString(Value, CultureInfo.InvariantCulture);
+            }
+            
+        }
+            
     }
 
 }
