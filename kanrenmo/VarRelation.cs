@@ -1,4 +1,6 @@
-﻿using Kanrenmo.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using Kanrenmo.Annotations;
 using System.Linq;
 using static Kanrenmo.Context;
 
@@ -17,7 +19,7 @@ namespace Kanrenmo
         /// <param name="variable">The variable to wrap.</param>
         /// <param name="relation">The relation.</param>
         internal VarRelation(Var variable, [CanBeNull] Relation relation = null): 
-            base(relation?.Execute ?? (context => Enumerable.Repeat(context, 1)))
+            base((relation??Unit).Execute)
         {
             _variable = variable;
         }

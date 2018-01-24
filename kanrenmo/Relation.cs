@@ -13,7 +13,9 @@ namespace Kanrenmo
         /// <summary>
         /// Empty relation
         /// </summary>
-        public static readonly Relation Empty = new Relation(context => Enumerable.Empty<Context>());
+        public static readonly Relation Empty = new Relation((Func<Context, IEnumerable<Context>>)null);
+
+        public static readonly Relation Unit = new Relation(context => Enumerable.Repeat(context, 1));
 
         /// <summary>
         /// Disjunction operator between two relations (same as "conde")
@@ -38,7 +40,7 @@ namespace Kanrenmo
         /// Constructs and initializes the class instance
         /// </summary>
         /// <param name="execute">relation function to wrap</param>
-        public Relation([NotNull] Func<Context, IEnumerable<Context>> execute) => Execute = execute;
+        public Relation(Func<Context, IEnumerable<Context>> execute) => _execute = execute;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Relation"/> class.
@@ -51,7 +53,8 @@ namespace Kanrenmo
         /// <summary>
         /// Executes the relation
         /// </summary>
-        public readonly Func<Context, IEnumerable<Context>> Execute;
+        public virtual IEnumerable<Context> Execute(Context context) =>
+            _execute?.Invoke(context) ?? Enumerable.Empty<Context>();  
 
         private static IEnumerable<Context> Union([NotNull] Context context, [NotNull] Relation left, [NotNull] Relation right)
         {
@@ -76,6 +79,8 @@ namespace Kanrenmo
         }
 
         private static IEnumerable<Context> Product([NotNull] Context context, [NotNull] Relation left, [NotNull] Relation right) => 
-            left.Execute(context).SelectMany(c => right.Execute(c));
+            left.Execute(context).SelectMany(right.Execute);
+           
+        private readonly Func<Context, IEnumerable<Context>> _execute;
     }
 }
