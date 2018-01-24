@@ -95,7 +95,9 @@ namespace Kanrenmo
         /// The result of the operation.
         /// </returns>
         [NotNull]
-        public static Relation operator !=([NotNull] Var left, [NotNull] Var right) => new Relation(context => throw new NotImplementedException());
+        public static Relation operator !=([NotNull] Var left, [NotNull] Var right) => 
+            new Disequality(left, right);
+
 
         /// <summary>
         /// The unique variable identifier
@@ -194,7 +196,6 @@ namespace Kanrenmo
 
             return "_." + index.ToString(CultureInfo.InvariantCulture);
         }
-
 
         private static int _id;
     }

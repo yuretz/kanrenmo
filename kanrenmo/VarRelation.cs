@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Kanrenmo.Annotations;
-using System.Linq;
+﻿using Kanrenmo.Annotations;
 using static Kanrenmo.Context;
 
 namespace Kanrenmo

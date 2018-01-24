@@ -52,7 +52,7 @@ namespace Kanrenmo
                         // and apply the relation
                         .Apply(relation)
                         // restore the scope for each resulting context
-                        .Select(child => new Context(parent._scope, child._environment)));
+                        .Select(child => new Context(parent._scope, child._environment, child._constraints)));
 
         /// <summary>
         /// Invokes the specified relation function.
@@ -62,7 +62,6 @@ namespace Kanrenmo
         [NotNull, Pure]
         public static Relation Invoke([NotNull] Func<Relation> function) =>
             new Relation(function);
-
 
         /// <summary>
         /// Makes a variable out of the specified value
@@ -130,8 +129,37 @@ namespace Kanrenmo
         {
             // use dynamic binding to dispatch to the proper method
             var result = UnifySingle(left, right);
-            return result == null ? Enumerable.Empty<Context>() : Enumerable.Repeat(result, 1);
+            return result == null ? Enumerable.Empty<Context>() : result.CheckAllConstraints();
         }
+
+        /// <summary>
+        /// Reifies the specified variable.
+        /// </summary>
+        /// <param name="variable">The variable to reify.</param>
+        /// <returns>Reification</returns>
+        [NotNull]
+        internal Var Reify(Var variable)
+        {
+            switch (variable)
+            {
+                case ValueVar value:
+                    return ReifyImpl(value);
+                case PairVar sequence:
+                    return ReifyImpl(sequence);
+                default:
+                    return ReifyImpl(variable);
+            }
+        }
+
+        /// <summary>
+        /// Enforces the specified constraint on this context.
+        /// </summary>
+        /// <param name="constraint">The constraint.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal Context Enforce(Constraint constraint) =>
+            new Context(_scope, _environment, _constraints.Add(constraint));
+        
 
         [NotNull]
         private static Var Seq([CanBeNull] IEnumerator<Var> variables) =>
@@ -184,12 +212,15 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="scope">The scope variables.</param>
         /// <param name="environment">The environment containing existing variable bindings.</param>
+        /// <param name="constraints">The constraints enforced on this context but not yet resolved.</param>
         private Context(
             [CanBeNull] ImmutableDictionary<Var, Var> scope = null, 
-            [CanBeNull] ImmutableDictionary<Var, Var> environment = null)
+            [CanBeNull] ImmutableDictionary<Var, Var> environment = null,
+            [CanBeNull] ImmutableList<Constraint> constraints = null)
         {
             _scope = scope ?? ImmutableDictionary<Var, Var>.Empty;
             _environment = environment ?? ImmutableDictionary<Var, Var>.Empty;
+            _constraints = constraints ?? ImmutableList<Constraint>.Empty;
         }
 
         /// <summary>
@@ -201,7 +232,8 @@ namespace Kanrenmo
         private Context With(params Var[] variables) =>
             new Context(
                 _scope.SetItems(variables.Select(v => new KeyValuePair<Var, Var>(v, new Var()))),
-                _environment);
+                _environment,
+                _constraints);
 
         /// <summary>
         /// Applies the specified relation to this context.
@@ -219,7 +251,7 @@ namespace Kanrenmo
         /// <returns>The resulting context</returns>
         [CanBeNull]
         private Context UnifyUnbound([NotNull] Var unbound, [NotNull] Var other) => 
-            other.Includes(unbound) ? null : new Context(_scope, _environment.Add(unbound, other));
+            other.Includes(unbound) ? null : new Context(_scope, _environment.Add(unbound, other), _constraints);
 
         /// <summary>
         /// Unifies two bound variables.
@@ -251,24 +283,7 @@ namespace Kanrenmo
         }
             
 
-        /// <summary>
-        /// Reifies the specified variable.
-        /// </summary>
-        /// <param name="variable">The variable to reify.</param>
-        /// <returns>Reification</returns>
-        [NotNull]
-        private Var Reify(Var variable)
-        {
-            switch (variable)
-            {
-                case ValueVar value:
-                    return ReifyImpl(value);
-                case PairVar sequence:
-                    return ReifyImpl(sequence);
-                default:
-                    return ReifyImpl(variable);
-            }
-        }
+ 
 
         /// <summary>
         /// Reifies the <see cref="ValueVar"/>.
@@ -313,7 +328,12 @@ namespace Kanrenmo
         private Binding QueryAll(IEnumerable<Var> variables) =>
             new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
 
+        private IEnumerable<Context> CheckAllConstraints() =>
+            _constraints.Aggregate(Enumerable.Repeat(new Context(_scope, _environment), 1),
+                (contexts, constraint) => contexts.SelectMany(c => c.Apply(constraint)));
+
         private readonly ImmutableDictionary<Var, Var> _environment;
         private readonly ImmutableDictionary<Var, Var> _scope;
+        private readonly ImmutableList<Constraint> _constraints;
     }
 }
