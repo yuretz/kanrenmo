@@ -16,7 +16,7 @@ namespace Kanrenmo
         /// <param name="variable">The variable to wrap.</param>
         /// <param name="relation">The relation.</param>
         internal VarRelation(Var variable, [CanBeNull] Relation relation = null): 
-            base((relation??Unit).Execute)
+            base((relation??Identity).Execute)
         {
             _variable = variable;
         }

@@ -29,7 +29,7 @@ namespace Kanrenmo.Tests
         public void OrReturnsMultipleResults([NotNull] params int[] values)
         {
             
-            var relation = values.Aggregate(Relation.Empty, (r, i) => r | _q == i);
+            var relation = values.Aggregate(Relation.Failure, (r, i) => r | _q == i);
             var results = Solve(relation, _q).ToList();
             Assert.Equal(values.Length, results.Count);
             Assert.All(results, r => Assert.Single(r));

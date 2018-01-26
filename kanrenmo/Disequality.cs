@@ -1,6 +1,4 @@
 ﻿using Kanrenmo.Annotations;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Kanrenmo
 {
@@ -12,35 +10,35 @@ namespace Kanrenmo
             _right = right;
         }
 
-        public override IEnumerable<Context> Execute([NotNull] Context context) =>
+        public override Context Satisfy(Context context) =>
             Disunify(context, context.Reify(_left), context.Reify(_right));
         
-        private IEnumerable<Context> Disunify(Context context, Var left, Var right)
+        private Context Disunify(Context context, Var left, Var right)
         {
             if(Equals(left, right))
             {
-                return Enumerable.Empty<Context>();
+                return null;
             }
 
-            if(!(left.Bound && right.Bound))
+            if (!left.Bound)
             {
-                return Enumerable.Repeat(context.Enforce(this), 1);
+                return right.Includes(left) ? context : context.Enforce(this);
             }
 
-            if (left is ValueVar 
-                && right is ValueVar)
+            if (!right.Bound)
             {
-                return Enumerable.Repeat(context, 1);
+                return left.Includes(right) ? context : context.Enforce(this);
             }
 
             if (left is PairVar leftPair 
                 && right is PairVar rightPair)
             {
-                return (leftPair.Head() != rightPair.Head() 
-                        | leftPair.Tail() != rightPair.Tail()).Execute(context);
+                return new Either(
+                    new Disequality(leftPair.Head(), rightPair.Head()), 
+                    new Disequality(leftPair.Tail(), rightPair.Tail())).Satisfy(context);
             }
 
-            return Enumerable.Repeat(context, 1);
+            return context;
         }
 
         private readonly Var _left;

@@ -14,12 +14,12 @@ namespace Kanrenmo
         /// <summary>
         /// The relation that always succeeds
         /// </summary>
-        public static readonly Relation Succeed = (Var)false == false;
+        public static readonly Relation Succeed = Relation.Identity;
 
         /// <summary>
         /// The relation that always fails
         /// </summary>
-        public static readonly Relation Fail = (Var)true == false;      
+        public static readonly Relation Fail = Relation.Failure;      
 
         /// <summary>
         /// Solve the specified relation and query the variables.
@@ -59,7 +59,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="function">The function to invoke.</param>
         /// <returns>Resulting relation</returns>
-        [NotNull, Pure]
+        [NotNull, Pure, UsedImplicitly]
         public static Relation Invoke([NotNull] Func<Relation> function) =>
             new Relation(function);
 
@@ -80,7 +80,7 @@ namespace Kanrenmo
         /// </summary>
         /// <param name="variables">The variables enumeration.</param>
         /// <returns>new sequence of nested pair variable instances</returns>
-        [NotNull, Pure]
+        [NotNull, Pure, UsedImplicitly]
         public static Var Seq([CanBeNull] IEnumerable<Var> variables) => 
             variables == null ? (Kanrenmo.Var.Empty) : Seq(variables.GetEnumerator());
 
@@ -99,7 +99,7 @@ namespace Kanrenmo
         /// <returns>
         /// S-expression string
         /// </returns>
-        [NotNull]
+        [NotNull, UsedImplicitly]
         public static string ToSExpression([NotNull] IReadOnlyList<Var> variables)
         {
             var unbound = new SortedList<int,Var>();
@@ -114,9 +114,17 @@ namespace Kanrenmo
         /// <returns>
         /// S-expression string
         /// </returns>
-        [NotNull]
+        [NotNull, UsedImplicitly]
         public static string ToSExpression(IEnumerable<IReadOnlyList<Var>> solutions) =>
             "(" + string.Join(" ", solutions.Select(ToSExpression)) + ")";
+
+        internal static readonly IEnumerable<Context> Nothing = Enumerable.Empty<Context>();
+
+        [NotNull, Pure]
+        internal static IEnumerable<Context> Just(Context context) => Enumerable.Repeat(context, 1);
+
+        [NotNull, Pure]
+        internal static IEnumerable<Context> Maybe([CanBeNull] Context context) => context != null ? Just(context) : Nothing;
 
         /// <summary>
         /// Unifies two variables.
@@ -125,12 +133,9 @@ namespace Kanrenmo
         /// <param name="right">The right variable.</param>
         /// <returns>Resulting context enumeration</returns>
         [NotNull, Pure]
-        internal IEnumerable<Context> Unify(Var left, Var right)
-        {
+        internal IEnumerable<Context> Unify(Var left, Var right) =>
             // use dynamic binding to dispatch to the proper method
-            var result = UnifySingle(left, right);
-            return result == null ? Enumerable.Empty<Context>() : result.CheckAllConstraints();
-        }
+            UnifySingle(left, right)?.CheckAllConstraints() ?? Nothing;
 
         /// <summary>
         /// Reifies the specified variable.
@@ -158,8 +163,7 @@ namespace Kanrenmo
         /// <returns></returns>
         [NotNull]
         internal Context Enforce(Constraint constraint) =>
-            new Context(_scope, _environment, _constraints.Add(constraint));
-        
+            new Context(_scope, _environment, _constraints.Add(constraint));  
 
         [NotNull]
         private static Var Seq([CanBeNull] IEnumerator<Var> variables) =>
@@ -194,10 +198,11 @@ namespace Kanrenmo
                 return UnifyUnbound(right, left);
             }
 
-            if (left is ValueVar leftVal && right is ValueVar rightVal)
-            {
-                return UnifyValues(leftVal, rightVal);
-            }
+            //// This is not needed since we know left and right are not equal
+            //if (left is ValueVar leftVal && right is ValueVar rightVal)
+            //{
+            //    return UnifyValues(leftVal, rightVal);
+            //}
                 
             if (left is PairVar leftSeq && right is PairVar rightSeq)
             {
@@ -252,17 +257,6 @@ namespace Kanrenmo
         [CanBeNull]
         private Context UnifyUnbound([NotNull] Var unbound, [NotNull] Var other) => 
             other.Includes(unbound) ? null : new Context(_scope, _environment.Add(unbound, other), _constraints);
-
-        /// <summary>
-        /// Unifies two bound variables.
-        /// </summary>
-        /// <param name="left">The unbound variable.</param>
-        /// <param name="right">The right variable.</param>
-        /// <returns>The resulting context</returns>
-        [CanBeNull]
-        private Context UnifyValues(ValueVar left, ValueVar right) => 
-            Equals(left, right) ? this : null;
-
 
         /// <summary>
         /// Unifies two pair variables.

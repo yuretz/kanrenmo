@@ -11,11 +11,14 @@ namespace Kanrenmo
     public class Relation
     {
         /// <summary>
-        /// Empty relation
+        /// The failure relation
         /// </summary>
-        public static readonly Relation Empty = new Relation((Func<Context, IEnumerable<Context>>)null);
+        public static readonly Relation Failure = new Relation(_ => Context.Nothing);
 
-        public static readonly Relation Unit = new Relation(context => Enumerable.Repeat(context, 1));
+        /// <summary>
+        /// The identity relation, 
+        /// </summary>
+        public static readonly Relation Identity = new Relation(Context.Just);
 
         /// <summary>
         /// Disjunction operator between two relations (same as "conde")
@@ -54,7 +57,7 @@ namespace Kanrenmo
         /// Executes the relation
         /// </summary>
         public virtual IEnumerable<Context> Execute(Context context) =>
-            _execute?.Invoke(context) ?? Enumerable.Empty<Context>();  
+            _execute?.Invoke(context) ?? Context.Nothing;  
 
         private static IEnumerable<Context> Union([NotNull] Context context, [NotNull] Relation left, [NotNull] Relation right)
         {
