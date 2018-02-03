@@ -34,7 +34,7 @@ for(int count = 1; count < 9; count ++)
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<<#=funcArgTypes#>, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<<#=funcArgTypes#>, Relation> function)
 		{
 <# 
 	for(int i = 1; i <= count; i++)

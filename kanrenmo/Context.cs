@@ -95,16 +95,20 @@ namespace Kanrenmo
         /// <summary>
         /// Convert the variables enumeration to S-expression
         /// </summary>
-        /// <param name="variables">The variables enumeration.</param>
+        /// <param name="binding">The binding.</param>
         /// <returns>
         /// S-expression string
         /// </returns>
         [NotNull, UsedImplicitly]
-        public static string ToSExpression([NotNull] IReadOnlyList<Var> variables)
+        public static string ToSExpression([NotNull] Binding binding)
         {
+            IReadOnlyList<Var> variables = binding;
+            IReadOnlyList<Constraint> constraints = binding.Constraints;
             var unbound = new SortedList<int,Var>();
-            var expression = string.Join(" ", variables.Select(v => v.ToSExpression(unbound)));  
-            return variables.Count != 1 ? "(" + expression + ")" : expression;
+            var varExpr = string.Join(" ", variables.Select(v => v.ToSExpression(unbound)));  
+            var reified = variables.Count != 1 ? "(" + varExpr + ")" : varExpr;
+            var constraintExpr = string.Join(" ", constraints.Select(c => c.ToSExpression(unbound)));
+            return constraints.Count != 0 ? "(" + reified + " " + constraintExpr + ")" : reified;
         }
 
         /// <summary>
@@ -115,7 +119,7 @@ namespace Kanrenmo
         /// S-expression string
         /// </returns>
         [NotNull, UsedImplicitly]
-        public static string ToSExpression(IEnumerable<IReadOnlyList<Var>> solutions) =>
+        public static string ToSExpression(IEnumerable<Binding> solutions) =>
             "(" + string.Join(" ", solutions.Select(ToSExpression)) + ")";
 
         internal static readonly IEnumerable<Context> Nothing = Enumerable.Empty<Context>();
@@ -301,7 +305,7 @@ namespace Kanrenmo
         /// <returns>A dictionary of variables with their bindings</returns>
         [NotNull]
         private Binding QueryAll(IEnumerable<Var> variables) =>
-            new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
+            new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))), _constraints);
 
         private IEnumerable<Context> CheckAllConstraints() =>
             _constraints.Aggregate(Just(new Context(_scope, _environment)),

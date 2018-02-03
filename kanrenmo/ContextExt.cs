@@ -16,7 +16,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Relation> function)
 		{
             var v1 = new Var();
             return Solve(function(v1), v1);
@@ -61,7 +61,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -109,7 +109,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -160,7 +160,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -214,7 +214,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -271,7 +271,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -331,7 +331,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();
@@ -394,7 +394,7 @@ namespace Kanrenmo
         /// <param name="function">The relation function.</param>
         /// <returns>The enumeration of solution results</returns>
         [NotNull, Pure]
-		public static IEnumerable<IReadOnlyList<Var>> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
+		public static IEnumerable<Binding> Solve([NotNull]Func<Var, Var, Var, Var, Var, Var, Var, Var, Relation> function)
 		{
             var v1 = new Var();
             var v2 = new Var();

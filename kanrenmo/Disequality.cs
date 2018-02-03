@@ -39,6 +39,17 @@ namespace Kanrenmo
             return valid.Any() ? context.Enforce(new Disequality(valid.ToImmutable())) : Context.Nothing;
         }
 
+        public override string ToSExpression(SortedList<int, Var> unbound) =>
+            "(!= ("
+            + string.Join(
+                " ",
+                _pairs.Select(
+                    pair => "("
+                            + pair.Head().ToSExpression(unbound)
+                            + " "
+                            + pair.Tail().ToSExpression(unbound) + ")"))
+            + "))";
+
         private class DisequalityPairComparer : IEqualityComparer<PairVar>
         {
             public bool Equals([NotNull] PairVar x, [NotNull] PairVar y) =>
@@ -66,7 +77,7 @@ namespace Kanrenmo
 
             return Enumerable.Repeat(new PairVar(left, right), 1);
         }
-        
+
         private readonly ImmutableList<PairVar> _pairs;
     }
 }

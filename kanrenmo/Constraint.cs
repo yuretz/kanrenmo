@@ -13,5 +13,8 @@ namespace Kanrenmo
 
         [NotNull]
         public abstract override IEnumerable<Context> Execute([NotNull] Context context);
+
+        [NotNull]
+        public abstract string ToSExpression(SortedList<int, Var> unbound);
     }
 }
