@@ -11,11 +11,7 @@ namespace Kanrenmo
         {
         }
 
-        [CanBeNull]
-        public abstract Context Satisfy([NotNull] Context context);
-
         [NotNull]
-        public override IEnumerable<Context> Execute([NotNull] Context context) =>
-            Context.Maybe(Satisfy(context));
+        public abstract override IEnumerable<Context> Execute([NotNull] Context context);
     }
 }

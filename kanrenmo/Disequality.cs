@@ -1,4 +1,7 @@
-﻿using Kanrenmo.Annotations;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Kanrenmo.Annotations;
 
 namespace Kanrenmo
 {
@@ -6,42 +9,64 @@ namespace Kanrenmo
     {
         public Disequality([NotNull] Var left, [NotNull] Var right)
         {
-            _left = left;
-            _right = right;
+            _pairs = ImmutableList<PairVar>.Empty.Add(new PairVar(left, right));
         }
 
-        public override Context Satisfy(Context context) =>
-            Disunify(context, context.Reify(_left), context.Reify(_right));
-        
-        private Context Disunify(Context context, Var left, Var right)
+        public override IEnumerable<Context> Execute(Context context)
         {
-            if(Equals(left, right))
+
+            var pairs = ImmutableList<PairVar>.Empty.AddRange(
+                _pairs.SelectMany(pair => Expand(context, pair))
+                    .Distinct(Comparer));
+            var valid = ImmutableList<PairVar>.Empty.ToBuilder();
+
+            foreach (var pair in pairs)
             {
-                return null;
+                var unified = context.Unify(pair.Head(), pair.Tail()).ToList();
+
+                if (!unified.Any())
+                {
+                    return Context.Just(context);
+                }
+
+                var current = context;
+                if (unified.Any(c => c != current))
+                {
+                    valid.Add(pair);
+                }        
             }
 
-            if (!left.Bound)
-            {
-                return right.Includes(left) ? context : context.Enforce(this);
-            }
+            return valid.Any() ? context.Enforce(new Disequality(valid.ToImmutable())) : Context.Nothing;
+        }
 
-            if (!right.Bound)
-            {
-                return left.Includes(right) ? context : context.Enforce(this);
-            }
+        private class DisequalityPairComparer : IEqualityComparer<PairVar>
+        {
+            public bool Equals([NotNull] PairVar x, [NotNull] PairVar y) =>
+                Equals(x.Head(), y.Head()) && Equals(x.Tail(), y.Tail())
+                || Equals(x.Head(), y.Tail()) && Equals(x.Tail(), y.Head());
 
-            if (left is PairVar leftPair 
+
+            public int GetHashCode([NotNull] PairVar pair) => pair.Head().GetHashCode() ^ pair.Tail().GetHashCode();
+        }
+        private static readonly DisequalityPairComparer Comparer = new DisequalityPairComparer();
+
+        private Disequality(ImmutableList<PairVar> pairs) => _pairs = pairs;
+
+        private IEnumerable<PairVar> Expand([NotNull] Context context, [NotNull] PairVar pair)
+        {
+            var left = context.Reify(pair.Head());
+            var right = context.Reify(pair.Tail());
+
+            if (left is PairVar leftPair
                 && right is PairVar rightPair)
             {
-                return new Either(
-                    new Disequality(leftPair.Head(), rightPair.Head()), 
-                    new Disequality(leftPair.Tail(), rightPair.Tail())).Satisfy(context);
+                return Expand(context, new PairVar(leftPair.Head(), rightPair.Head()))
+                    .Union(Expand(context, new PairVar(leftPair.Tail(), rightPair.Tail())), Comparer);
             }
 
-            return context;
+            return Enumerable.Repeat(new PairVar(left, right), 1);
         }
-
-        private readonly Var _left;
-        private readonly Var _right;
+        
+        private readonly ImmutableList<PairVar> _pairs;
     }
 }

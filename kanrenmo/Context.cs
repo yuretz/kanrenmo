@@ -129,14 +129,38 @@ namespace Kanrenmo
         /// <summary>
         /// Unifies two variables.
         /// </summary>
-        /// <param name="left">The unbound variable.</param>
+        /// <param name="left">The left variable.</param>
         /// <param name="right">The right variable.</param>
         /// <returns>Resulting context enumeration</returns>
         [NotNull, Pure]
-        internal IEnumerable<Context> Unify(Var left, Var right) =>
-            // use dynamic binding to dispatch to the proper method
-            UnifySingle(left, right)?.CheckAllConstraints() ?? Nothing;
+        internal IEnumerable<Context> Unify(Var left, Var right)
+        {
+            left = Reify(left);
+            right = Reify(right);
 
+            if (Equals(left, right))
+            {
+                // this is also useful to avoid circular bindings
+                return Just(this);
+            }
+
+            if (!left.Bound)
+            {
+                return UnifyUnbound(left, right).SelectMany(c => c.CheckAllConstraints());
+            }
+
+            if (!right.Bound)
+            {
+                return UnifyUnbound(right, left).SelectMany(c => c.CheckAllConstraints());
+            }
+                
+            if (left is PairVar leftSeq && right is PairVar rightSeq)
+            {
+                return UnifySequences(leftSeq, rightSeq).SelectMany(c => c.CheckAllConstraints());
+            }
+
+            return Nothing;
+        }
         /// <summary>
         /// Reifies the specified variable.
         /// </summary>
@@ -162,55 +186,13 @@ namespace Kanrenmo
         /// <param name="constraint">The constraint.</param>
         /// <returns></returns>
         [NotNull]
-        internal Context Enforce(Constraint constraint) =>
-            new Context(_scope, _environment, _constraints.Add(constraint));  
+        internal IEnumerable<Context> Enforce(Constraint constraint) =>
+            // TODO: reduce here
+            Just(new Context(_scope, _environment, _constraints.Add(constraint)));  
 
         [NotNull]
         private static Var Seq([CanBeNull] IEnumerator<Var> variables) =>
             !(variables?.MoveNext() ?? false) ? Kanrenmo.Var.Empty : variables.Current.Combine(Seq(variables));
-
-        /// <summary>
-        /// Unifies two variables returning the new context.
-        /// </summary>
-        /// <param name="left">The unbound.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The new context or null if unification fails</returns>
-        [CanBeNull]
-        private Context UnifySingle(Var left, Var right)
-        {
-
-            left = Reify(left);
-            right = Reify(right);
-
-            if (Equals(left, right))
-            {
-                // this is useful to avoid circular bindings
-                return this;
-            }
-
-            if (!left.Bound)
-            {
-                return UnifyUnbound(left, right);
-            }
-
-            if (!right.Bound)
-            {
-                return UnifyUnbound(right, left);
-            }
-
-            //// This is not needed since we know left and right are not equal
-            //if (left is ValueVar leftVal && right is ValueVar rightVal)
-            //{
-            //    return UnifyValues(leftVal, rightVal);
-            //}
-                
-            if (left is PairVar leftSeq && right is PairVar rightSeq)
-            {
-                return UnifySequences(leftSeq, rightSeq);
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Context" /> class.
@@ -254,9 +236,11 @@ namespace Kanrenmo
         /// <param name="unbound">The unbound variable.</param>
         /// <param name="other">The other variable.</param>
         /// <returns>The resulting context</returns>
-        [CanBeNull]
-        private Context UnifyUnbound([NotNull] Var unbound, [NotNull] Var other) => 
-            other.Includes(unbound) ? null : new Context(_scope, _environment.Add(unbound, other), _constraints);
+        [NotNull]
+        private IEnumerable<Context> UnifyUnbound([NotNull] Var unbound, [NotNull] Var other) => 
+            !other.Includes(unbound) 
+                ? Just(new Context(_scope, _environment.Add(unbound, other), _constraints)) 
+                : Nothing;
 
         /// <summary>
         /// Unifies two pair variables.
@@ -264,21 +248,18 @@ namespace Kanrenmo
         /// <param name="left">The first pair variable.</param>
         /// <param name="right">The second pair variable.</param>
         /// <returns>The resulting context</returns>
-        [CanBeNull]
-        private Context UnifySequences([NotNull] PairVar left, [NotNull] PairVar right)
+        [NotNull]
+        private IEnumerable<Context> UnifySequences([NotNull] PairVar left, [NotNull] PairVar right)
         {
             if (left.IsEmpty || right.IsEmpty)
             {
-                return left.IsEmpty && right.IsEmpty ? this : null;
+                return left.IsEmpty && right.IsEmpty ? Just(this) : Nothing;
             }
             
-            return UnifySingle(left.Head(), right.Head())
-                    ?.UnifySingle(left.Tail(), right.Tail());
+            return Unify(left.Head(), right.Head())
+                .SelectMany(c => c.Unify(left.Tail(), right.Tail()));
         }
             
-
- 
-
         /// <summary>
         /// Reifies the <see cref="ValueVar"/>.
         /// </summary>
@@ -323,7 +304,7 @@ namespace Kanrenmo
             new Binding(variables.Select(v => new KeyValuePair<Var, Var>(v, Reify(v))));
 
         private IEnumerable<Context> CheckAllConstraints() =>
-            _constraints.Aggregate(Enumerable.Repeat(new Context(_scope, _environment), 1),
+            _constraints.Aggregate(Just(new Context(_scope, _environment)),
                 (contexts, constraint) => contexts.SelectMany(c => c.Apply(constraint)));
 
         private readonly ImmutableDictionary<Var, Var> _environment;

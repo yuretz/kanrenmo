@@ -31,12 +31,14 @@ namespace Kanrenmo
         /// Gets the head element of the sequence.
         /// </summary>
         /// <returns>The head element</returns>
+        [NotNull]
         public override Var Head() => _head;
 
         /// <summary>
         /// Gets the tail subsequence of the sequence.
         /// </summary>
         /// <returns>The tail element</returns>
+        [NotNull]
         public override Var Tail() => _tail;
 
         /// <summary>
