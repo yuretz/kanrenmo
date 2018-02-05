@@ -194,7 +194,7 @@ namespace Kanrenmo
                 unbound.Add(index, this);
             }
 
-            return "_." + index.ToString(CultureInfo.InvariantCulture);
+            return "_" + index.ToString(CultureInfo.InvariantCulture);
         }
 
         private static int _id;

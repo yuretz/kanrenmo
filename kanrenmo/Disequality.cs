@@ -40,7 +40,7 @@ namespace Kanrenmo
         }
 
         public override string ToSExpression(SortedList<int, Var> unbound) =>
-            "(!= ("
+            "(!= "
             + string.Join(
                 " ",
                 _pairs.Select(
@@ -48,7 +48,7 @@ namespace Kanrenmo
                             + pair.Head().ToSExpression(unbound)
                             + " "
                             + pair.Tail().ToSExpression(unbound) + ")"))
-            + "))";
+            + ")";
 
         private class DisequalityPairComparer : IEqualityComparer<PairVar>
         {

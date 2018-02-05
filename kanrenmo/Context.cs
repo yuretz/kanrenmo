@@ -108,7 +108,7 @@ namespace Kanrenmo
             var varExpr = string.Join(" ", variables.Select(v => v.ToSExpression(unbound)));  
             var reified = variables.Count != 1 ? "(" + varExpr + ")" : varExpr;
             var constraintExpr = string.Join(" ", constraints.Select(c => c.ToSExpression(unbound)));
-            return constraints.Count != 0 ? "(" + reified + " " + constraintExpr + ")" : reified;
+            return constraints.Count != 0 ? "(" + reified + " : " + constraintExpr + ")" : reified;
         }
 
         /// <summary>
